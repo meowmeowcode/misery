@@ -2,7 +2,7 @@
 name = "asyncpg"
 version = "0.25.0"
 description = "An asyncio PostgreSQL driver"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.0"
 
@@ -376,7 +376,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 name = "pypika"
 version = "0.48.9"
 description = "A SQL query builder API for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -527,7 +527,7 @@ six = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "49df44ea2311159397f68e9cb97e719f65c359fde51441bada87e312d5434c09"
+content-hash = "c497dc6e6caca6b6879f51093e59a18336c3dc8b47212c71b5e4f11d3ba8f075"
 
 [metadata.files]
 asyncpg = [
