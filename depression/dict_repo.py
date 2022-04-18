@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import operator
 import re
+from abc import abstractmethod
 from functools import reduce
 from functools import total_ordering
 from typing import Any
@@ -35,8 +36,18 @@ class _Desc:
 class DictRepo(Generic[T]):
     id_field = "id"
 
-    def __init__(self) -> None:
-        self._data: dict[Any, T] = {}
+    @property
+    @abstractmethod
+    def key(self) -> str:
+        ...
+
+    def __init__(self, storage: dict) -> None:
+        self.storage = storage
+        self.storage[self.key] = {}
+
+    @property
+    def _data(self) -> dict[Any, T]:
+        return self.storage[self.key]
 
     async def add(self, entity: T) -> None:
         self._data[getattr(entity, self.id_field)] = copy.deepcopy(entity)
@@ -135,3 +146,17 @@ class DictRepo(Generic[T]):
 
     async def count(self) -> int:
         return len(self._data)
+
+
+class DictTransactionManager:
+    def __init__(self, storage: dict) -> None:
+        self._storage = storage
+        self._copy: dict = {}
+
+    async def __aenter__(self) -> None:
+        self._copy = copy.deepcopy(self._storage)
+
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        if exc is not None:
+            self._storage.clear()
+            self._storage.update(self._copy)

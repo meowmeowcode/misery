@@ -5,7 +5,9 @@ from typing import Sequence
 import pytest  # type: ignore
 
 from depression.core import Repo
+from depression.core import TransactionManager
 from depression.dict_repo import DictRepo
+from depression.dict_repo import DictTransactionManager
 from depression import F
 
 from .base import (
@@ -16,12 +18,22 @@ from .base import (
 
 
 class SymptomsDictRepo(DictRepo[Symptom]):
-    pass
+    key = "symptoms"
 
 
 @pytest.fixture
-def symptoms_repo() -> SymptomsDictRepo:
-    return SymptomsDictRepo()
+def storage() -> dict:
+    return {}
+
+
+@pytest.fixture
+def symptoms_repo(storage: dict) -> SymptomsDictRepo:
+    return SymptomsDictRepo(storage)
+
+
+@pytest.fixture
+def transaction_manager(storage: dict) -> DictTransactionManager:
+    return DictTransactionManager(storage)
 
 
 async def test_get(symptoms_repo: SymptomsRepo, hopelessness: Symptom) -> None:
@@ -194,3 +206,29 @@ async def test_count(
     symptoms_repo: SymptomsRepo, hopelessness: Symptom, helplessness: Symptom
 ) -> None:
     assert await symptoms_repo.count() == 2
+
+
+async def test_transaction(
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    transaction_manager: TransactionManager,
+) -> None:
+    async with transaction_manager:
+        await symptoms_repo.delete(id=hopelessness.id)
+
+    assert await symptoms_repo.exists(id=hopelessness.id) is False
+
+
+async def test_failed_transaction(
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    transaction_manager: TransactionManager,
+) -> None:
+    try:
+        async with transaction_manager:
+            await symptoms_repo.delete(id=hopelessness.id)
+            raise RuntimeError("failed transaction test")
+    except RuntimeError:
+        pass
+
+    assert await symptoms_repo.exists(id=hopelessness.id) is True

@@ -1,6 +1,7 @@
 import dataclasses
 import typing
 from abc import abstractmethod
+from contextvars import ContextVar
 from enum import Enum
 from typing import Any
 from typing import Generic
@@ -228,3 +229,23 @@ class PGRepo(Generic[T]):
     async def count(self) -> int:
         query = PostgreSQLQuery.from_(self.table).select(fn.Count("*"))
         return await self.fetch_value(query)
+
+
+_current_transaction = ContextVar("_current_transaction", default=None)
+
+
+class PGTransactionManager:
+    def __init__(self, conn: Connection) -> None:
+        self._conn = conn
+
+    async def __aenter__(self) -> None:
+        t = self._conn.transaction()
+        await t.__aenter__()
+        _current_transaction.set(t)
+
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        t = _current_transaction.get()
+
+        if t is not None:
+            await t.__aexit__(exc_type, exc, tb)
+            _current_transaction.set(None)

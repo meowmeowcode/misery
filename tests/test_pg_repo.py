@@ -11,7 +11,9 @@ import pytest  # type: ignore
 from asyncpg import Connection  # type: ignore
 
 from depression.core import Repo
+from depression.core import TransactionManager
 from depression.pg_repo import PGRepo
+from depression.pg_repo import PGTransactionManager
 from depression import F
 
 from .base import (
@@ -76,6 +78,11 @@ async def clean_db(db_schema: None, conn: Connection) -> None:
 @pytest.fixture
 def symptoms_repo(conn: Connection) -> SymptomsPGRepo:
     return SymptomsPGRepo(conn)
+
+
+@pytest.fixture
+def transaction_manager(conn: Connection) -> PGTransactionManager:
+    return PGTransactionManager(conn)
 
 
 async def test_get(symptoms_repo: SymptomsRepo, hopelessness: Symptom) -> None:
@@ -248,3 +255,29 @@ async def test_count(
     symptoms_repo: SymptomsRepo, hopelessness: Symptom, helplessness: Symptom
 ) -> None:
     assert await symptoms_repo.count() == 2
+
+
+async def test_transaction(
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    transaction_manager: TransactionManager,
+) -> None:
+    async with transaction_manager:
+        await symptoms_repo.delete(id=hopelessness.id)
+
+    assert await symptoms_repo.exists(id=hopelessness.id) is False
+
+
+async def test_failed_transaction(
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    transaction_manager: TransactionManager,
+) -> None:
+    try:
+        async with transaction_manager:
+            await symptoms_repo.delete(id=hopelessness.id)
+            raise RuntimeError("failed transaction test")
+    except RuntimeError:
+        pass
+
+    assert await symptoms_repo.exists(id=hopelessness.id) is True

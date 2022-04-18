@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+from contextlib import AbstractAsyncContextManager
 from enum import Enum
 from functools import partial
 from typing import Any
@@ -181,3 +182,6 @@ class Repo(Protocol[T]):
 
 class NotFound(Exception):
     pass
+
+
+TransactionManager = AbstractAsyncContextManager
