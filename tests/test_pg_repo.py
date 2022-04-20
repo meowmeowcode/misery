@@ -26,15 +26,6 @@ from .base import (
 class SymptomsPGRepo(PGRepo[Symptom]):
     table_name = "symptoms"
 
-    def dump(self, entity: Symptom) -> dict:
-        record = super().dump(entity)
-        record["type"] = entity.type.name
-        return record
-
-    def load(self, record: dict) -> Symptom:
-        record["type"] = SymptomType[record["type"]]
-        return super().load(record)
-
 
 @pytest.fixture(scope="session")
 def event_loop():

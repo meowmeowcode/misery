@@ -8,9 +8,9 @@ from depression.core import Repo
 
 
 @total_ordering
-class SymptomType(Enum):
-    PSYCHOLOGICAL = enum.auto()
-    PHYSICAL = enum.auto()
+class SymptomType(str, Enum):
+    PSYCHOLOGICAL = "PSYCHOLOGICAL"
+    PHYSICAL = "PHYSICAL"
 
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, SymptomType):
