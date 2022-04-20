@@ -173,9 +173,6 @@ class Repo(Protocol[T]):
     async def exists(self, **kwargs) -> bool:
         ...
 
-    async def clean(self) -> None:
-        ...
-
     async def count(self) -> int:
         ...
 

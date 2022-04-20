@@ -134,15 +134,9 @@ class DictRepo(Generic[T]):
         for id, item in list(self._data.items()):
             if self._matches(item, **kwargs):
                 del self._data[id]
-                return
-
-        raise NotFound
 
     async def exists(self, **kwargs) -> bool:
         return any(self._matches(entity, **kwargs) for entity in self._data.values())
-
-    async def clean(self) -> None:
-        self._data.clear()
 
     async def count(self) -> int:
         return len(self._data)

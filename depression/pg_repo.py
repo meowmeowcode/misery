@@ -222,10 +222,6 @@ class PGRepo(Generic[T]):
         data = await self.fetch_value(query)
         return data is not None
 
-    async def clean(self) -> None:
-        query = PostgreSQLQuery.from_(self.table).delete()
-        await self.execute(query)
-
     async def count(self) -> int:
         query = PostgreSQLQuery.from_(self.table).select(fn.Count("*"))
         return await self.fetch_value(query)

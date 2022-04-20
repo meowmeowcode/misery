@@ -234,10 +234,10 @@ async def test_exists(
     assert await symptoms_repo.exists(**params) is result
 
 
-async def test_clean(
+async def test_delete_all(
     symptoms_repo: SymptomsRepo, hopelessness: Symptom, helplessness: Symptom
 ) -> None:
-    await symptoms_repo.clean()
+    await symptoms_repo.delete()
     symptoms = list(await symptoms_repo.get_many())
     assert symptoms == []
 
