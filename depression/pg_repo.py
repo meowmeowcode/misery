@@ -202,8 +202,11 @@ class PGRepo(Generic[T]):
         for k, v in record.items():
             query = query.set(k, v)
 
-        query.where(self.table[self.id_field] == getattr(entity, self.id_field))
-        await self.execute(query)
+        query = query.where(self.table[self.id_field] == getattr(entity, self.id_field))
+        result = await self._conn.execute(str(query))
+
+        if result == "UPDATE 0":
+            raise NotFound
 
     async def delete(self, **kwargs) -> None:
         query = PostgreSQLQuery.from_(self.table).delete()

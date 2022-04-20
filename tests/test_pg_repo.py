@@ -10,8 +10,12 @@ import asyncpg  # type: ignore
 import pytest  # type: ignore
 from asyncpg import Connection  # type: ignore
 
-from depression.core import Repo
-from depression.core import TransactionManager
+from depression.core import (
+    NotFound,
+    Repo,
+    TransactionManager,
+)
+
 from depression.pg_repo import PGRepo
 from depression.pg_repo import PGTransactionManager
 from depression import F
@@ -216,6 +220,15 @@ async def test_update(symptoms_repo: SymptomsRepo, helplessness: Symptom) -> Non
     await symptoms_repo.update(helplessness)
     symptom = await symptoms_repo.get(id=helplessness.id)
     assert symptom == helplessness
+
+
+async def test_update_not_found(
+    symptoms_repo: SymptomsRepo, helplessness: Symptom
+) -> None:
+    helplessness.id = 123
+
+    with pytest.raises(NotFound):
+        await symptoms_repo.update(helplessness)
 
 
 @pytest.mark.parametrize(
