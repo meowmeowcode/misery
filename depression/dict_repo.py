@@ -59,6 +59,9 @@ class DictRepo(Generic[T]):
 
         raise NotFound
 
+    async def get_for_update(self, **kwargs) -> T:
+        return await self.get(**kwargs)
+
     def _matches(self, entity, **kwargs) -> bool:
         return all(getattr(entity, k) == v for k, v in kwargs.items())
 

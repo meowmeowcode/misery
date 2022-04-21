@@ -45,6 +45,13 @@ async def test_get(symptoms_repo: SymptomsRepo, hopelessness: Symptom) -> None:
     assert s == hopelessness
 
 
+async def test_get_for_update(
+    symptoms_repo: SymptomsRepo, hopelessness: Symptom
+) -> None:
+    s = await symptoms_repo.get_for_update(id=hopelessness.id)
+    assert s == hopelessness
+
+
 async def test_get_many(
     symptoms_repo: SymptomsRepo, hopelessness: Symptom, helplessness: Symptom
 ) -> None:

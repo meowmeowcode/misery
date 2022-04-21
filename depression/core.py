@@ -155,6 +155,9 @@ class Repo(Protocol[T]):
     async def get(self, **kwargs) -> T:
         ...
 
+    async def get_for_update(self, **kwargs) -> T:
+        ...
+
     async def get_many(
         self,
         filter_: Sequence[F] = (),

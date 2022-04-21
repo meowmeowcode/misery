@@ -121,6 +121,19 @@ class PGRepo(Generic[T]):
 
         return await self.fetch_one(query)
 
+    async def get_for_update(self, **kwargs) -> T:
+        query = (
+            PostgreSQLQuery.from_(self.table)
+            .select(self.table[self.id_field])
+            .for_update()
+        )
+
+        for k, v in kwargs.items():
+            query = query.where(self.table[k] == v)
+
+        await self._conn.fetchrow(str(query))
+        return await self.get(**kwargs)
+
     async def get_many(
         self,
         filter_: Sequence[F] = (),
