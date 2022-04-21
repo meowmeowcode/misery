@@ -2,7 +2,7 @@
 name = "depression"
 version = "0.1.0"
 description = ""
-authors = ["Anton Evdokimov <aevdokimov@ptsecurity.com>"]
+authors = ["Anton Evdokimov <meowmeowcode@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
