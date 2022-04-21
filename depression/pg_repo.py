@@ -225,8 +225,12 @@ class PGRepo(Generic[T]):
         data = await self.fetch_value(query)
         return data is not None
 
-    async def count(self) -> int:
+    async def count(self, **kwargs) -> int:
         query = PostgreSQLQuery.from_(self.table).select(fn.Count("*"))
+
+        for k, v in kwargs.items():
+            query = query.where(self.table[k] == v)
+
         return await self.fetch_value(query)
 
 

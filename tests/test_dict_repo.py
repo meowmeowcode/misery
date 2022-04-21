@@ -216,9 +216,21 @@ async def test_delete_all(
 
 
 async def test_count(
-    symptoms_repo: SymptomsRepo, hopelessness: Symptom, helplessness: Symptom
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    helplessness: Symptom,
+    insomnia: Symptom,
 ) -> None:
-    assert await symptoms_repo.count() == 2
+    assert await symptoms_repo.count(type=SymptomType.PSYCHOLOGICAL) == 2
+
+
+async def test_count_all(
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    helplessness: Symptom,
+    insomnia: Symptom,
+) -> None:
+    assert await symptoms_repo.count() == 3
 
 
 async def test_transaction(

@@ -138,7 +138,11 @@ class DictRepo(Generic[T]):
     async def exists(self, **kwargs) -> bool:
         return any(self._matches(entity, **kwargs) for entity in self._data.values())
 
-    async def count(self) -> int:
+    async def count(self, **kwargs) -> int:
+        if kwargs:
+            return sum(
+                1 for entity in self._data.values() if self._matches(entity, **kwargs)
+            )
         return len(self._data)
 
 
