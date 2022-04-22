@@ -339,6 +339,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "pyclean"
+version = "2.2.0"
+description = "Pure Python cross-platform pyclean. Clean up your Python bytecode."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
@@ -527,7 +535,7 @@ six = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "c497dc6e6caca6b6879f51093e59a18336c3dc8b47212c71b5e4f11d3ba8f075"
+content-hash = "d119e9ee9075e25297dc4f58b050bf935b549ab0d9a2383e4b164a0bb63d5a2f"
 
 [metadata.files]
 asyncpg = [
@@ -775,6 +783,10 @@ pluggy = [
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
+]
+pyclean = [
+    {file = "pyclean-2.2.0-py3-none-any.whl", hash = "sha256:5f99597b76249b71b86d8e9aff1e69dfdc0b1976d14ce366e07b28dc6f7a8ee6"},
+    {file = "pyclean-2.2.0.tar.gz", hash = "sha256:48f1801804fa2f04f2c64348da8bd61797fc9722e1120c470d5cc67a205843c7"},
 ]
 pycparser = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},

@@ -10,15 +10,15 @@ import asyncpg  # type: ignore
 import pytest  # type: ignore
 from asyncpg import Connection  # type: ignore
 
-from depression.core import (
+from misery.core import (
     NotFound,
     Repo,
     TransactionManager,
 )
 
-from depression.pg_repo import PGRepo
-from depression.pg_repo import PGTransactionManager
-from depression import F
+from misery.pg_repo import PGRepo
+from misery.pg_repo import PGTransactionManager
+from misery import F
 
 from .base import (
     Symptom,
@@ -40,7 +40,7 @@ def event_loop():
 
 @pytest.fixture(scope="session")
 def conn_str() -> str:
-    return "postgresql://depression:depression@localhost/depression"
+    return "postgresql://misery:misery@localhost/misery"
 
 
 @pytest.fixture(scope="session")

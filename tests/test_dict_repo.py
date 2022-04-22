@@ -4,15 +4,15 @@ from typing import Sequence
 
 import pytest  # type: ignore
 
-from depression.core import (
+from misery.core import (
     NotFound,
     Repo,
     TransactionManager,
 )
 
-from depression.dict_repo import DictRepo
-from depression.dict_repo import DictTransactionManager
-from depression import F
+from misery.dict_repo import DictRepo
+from misery.dict_repo import DictTransactionManager
+from misery import F
 
 from .base import (
     Symptom,

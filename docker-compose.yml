@@ -5,6 +5,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: depression
-      POSTGRES_PASSWORD: depression
-      POSTGRES_DB: depression
+      POSTGRES_USER: misery
+      POSTGRES_PASSWORD: misery
+      POSTGRES_DB: misery
