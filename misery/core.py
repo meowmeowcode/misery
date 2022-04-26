@@ -152,6 +152,9 @@ class Repo(Protocol[T]):
     async def add(self, entity: T) -> None:
         ...
 
+    async def add_many(self, entities: Iterable[T]) -> None:
+        ...
+
     async def get(self, **kwargs) -> T:
         ...
 

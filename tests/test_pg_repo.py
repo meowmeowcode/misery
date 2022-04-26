@@ -80,6 +80,14 @@ def transaction_manager(conn: Connection) -> PGTransactionManager:
     return PGTransactionManager(conn)
 
 
+async def test_add_many(symptoms_repo: SymptomsRepo) -> None:
+    irritability = Symptom(id=1, name="Irritability", type=SymptomType.PSYCHOLOGICAL)
+    back_pain = Symptom(id=2, name="Back pain", type=SymptomType.PHYSICAL)
+    await symptoms_repo.add_many([irritability, back_pain])
+    symptoms = list(await symptoms_repo.get_many())
+    assert symptoms == [irritability, back_pain]
+
+
 async def test_get(symptoms_repo: SymptomsRepo, hopelessness: Symptom) -> None:
     s = await symptoms_repo.get(id=hopelessness.id)
     assert s == hopelessness

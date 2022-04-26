@@ -52,6 +52,10 @@ class DictRepo(Generic[T]):
     async def add(self, entity: T) -> None:
         self._data[getattr(entity, self.id_field)] = copy.deepcopy(entity)
 
+    async def add_many(self, entities: Iterable[T]) -> None:
+        for entity in entities:
+            await self.add(entity)
+
     async def get(self, **kwargs) -> T:
         for entity in self._data.values():
             if self._matches(entity, **kwargs):

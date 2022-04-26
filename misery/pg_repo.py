@@ -1,4 +1,5 @@
 import dataclasses
+import itertools
 import typing
 from abc import abstractmethod
 from contextvars import ContextVar
@@ -12,13 +13,18 @@ from typing import Sequence
 from typing import TypeVar
 
 from asyncpg import Connection  # type: ignore
-from pypika import Order  # type: ignore
-from pypika import PostgreSQLQuery  # type: ignore
-from pypika import Table  # type: ignore
-from pypika import functions as fn  # type: ignore
-from pypika.terms import BasicCriterion  # type: ignore
-from pypika.terms import Term  # type: ignore
+from pypika import (  # type: ignore
+    Order,
+    Parameter,
+    PostgreSQLQuery,
+    Table,
+    functions as fn,
+)
 from pypika.enums import Comparator  # type: ignore
+from pypika.terms import (  # type: ignore
+    BasicCriterion,
+    Term,
+)
 
 from .core import F
 from .core import FilterType
@@ -112,6 +118,25 @@ class PGRepo(Generic[T]):
             .insert(*data.values())
         )
         await self.execute(query)
+
+    async def add_many(self, entities: Iterable[T]) -> None:
+        ientities = iter(entities)
+        first = next(ientities)
+        data = self.dump(first)
+
+        query = (
+            PostgreSQLQuery.into(self.table)
+            .columns(*data.keys())
+            .insert(*[Parameter(f"${n}") for n in range(1, len(data) + 1)])
+        )
+
+        await self._conn.executemany(
+            str(query),
+            itertools.chain(
+                [tuple(data.values())],
+                (tuple(self.dump(x).values()) for x in ientities),
+            ),
+        )
 
     async def get(self, **kwargs) -> T:
         query = self.query.limit(1)
