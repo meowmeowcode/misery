@@ -16,6 +16,7 @@ docker-compose = "^1.29.2"
 PyPika = "^0.48.9"
 asyncpg = "^0.25.0"
 pyclean = "^2.2.0"
+Sphinx = "^4.5.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
