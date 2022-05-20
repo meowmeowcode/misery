@@ -6,7 +6,7 @@
 Misery
 ======
 
-*This library is dedicated to all python developers
+*This library is dedicated to those python developers
 who wrote a lot of unmaintainable code trying to work with
 databases asynchronously.*
 
@@ -18,8 +18,10 @@ In spite of its name, it may be a good choice because:
 - it works well with MyPy
 - it doesn't use a lot of magic
 
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+   guide
