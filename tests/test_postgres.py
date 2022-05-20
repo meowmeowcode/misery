@@ -16,8 +16,8 @@ from misery.core import (
     TransactionManager,
 )
 
-from misery.pg_repo import PGRepo
-from misery.pg_repo import PGTransactionManager
+from misery.postgres import PGRepo
+from misery.postgres import PGTransactionManager
 from misery import F
 
 from .base import (

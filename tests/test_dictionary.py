@@ -10,8 +10,8 @@ from misery.core import (
     TransactionManager,
 )
 
-from misery.dict_repo import DictRepo
-from misery.dict_repo import DictTransactionManager
+from misery.dictionary import DictRepo
+from misery.dictionary import DictTransactionManager
 from misery import F
 
 from .base import (
