@@ -95,6 +95,11 @@ class PGRepo(Generic[T]):
     async def execute(self, query: PostgreSQLQuery) -> None:
         await self._conn.execute(str(query))
 
+    async def execute_many(
+        self, query: PostgreSQLQuery, args: Iterable[Sequence]
+    ) -> None:
+        await self._conn.executemany(str(query), args)
+
     async def fetch_one(self, query: PostgreSQLQuery) -> T:
         data = await self._conn.fetchrow(str(query))
 
@@ -118,6 +123,10 @@ class PGRepo(Generic[T]):
             .insert(*data.values())
         )
         await self.execute(query)
+        await self.after_save(entity, new=True)
+
+    async def after_save(self, entity: T, new: bool) -> None:
+        pass
 
     async def add_many(self, entities: Iterable[T]) -> None:
         ientities = iter(entities)
@@ -130,8 +139,8 @@ class PGRepo(Generic[T]):
             .insert(*[Parameter(f"${n}") for n in range(1, len(data) + 1)])
         )
 
-        await self._conn.executemany(
-            str(query),
+        await self.execute_many(
+            query,
             itertools.chain(
                 [tuple(data.values())],
                 (tuple(self.dump(x).values()) for x in ientities),
@@ -245,6 +254,8 @@ class PGRepo(Generic[T]):
 
         if result == "UPDATE 0":
             raise NotFound
+
+        await self.after_save(entity, new=False)
 
     async def delete(self, **kwargs) -> None:
         query = PostgreSQLQuery.from_(self.table).delete()
