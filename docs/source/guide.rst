@@ -155,3 +155,110 @@ constrant on the "name" column.
 Repository customization
 ------------------------
 
+The default behaviour is not enough when things get more complex
+and some additional code has to be written. Look what
+may change in the case of one-to-many relationship::
+
+    from typing import List
+
+    from pypika import Parameter, PostgreSQLQuery, Table
+    from pypika.terms import AggregateFunction
+
+
+    @dataclass
+    class User:
+        id: UUID
+        name: str
+        emails: List[str]
+
+
+    await conn.execute(
+        """
+            CREATE TABLE emails (
+                id uuid PRIMARY KEY,
+                email text NOT NULL UNIQUE,
+                user_id uuid REFERENCES users(id)
+            );
+        """
+    )
+
+
+    class UsersRepo(PGRepo[User]):
+        table_name = "users"
+        emails_table = Table("emails")
+
+        @property
+        def query(self) -> PostgreSQLQuery:
+            return PostgreSQLQuery.from_(
+                self.table
+            ).left_outer_join(
+                self.emails_table
+            ).on(
+                self.emails_table.user_id == self.table.id
+            ).groupby(
+                self.table.id,
+                self.table.name,
+            ).select(
+                self.table.id,
+                self.table.name,
+                AggregateFunction(
+                    "array_agg",
+                    self.emails_table.email,
+                ).as_("emails")
+            )
+
+        def dump(self, entity: User) -> dict:
+            return {
+                "id": entity.id,
+                "name": entity.name,
+            }
+
+        def load(self, row: dict) -> User:
+            return User(
+                id=row["id"],
+                name=row["name"],
+                emails=[
+                    x for x in row["emails"]
+                    if x is not None
+                ],
+            )
+
+        async def after_save(self, entity: User, new: bool) -> None:
+            if not new:
+                # For simplicity,
+                # let's just delete all previous email rows
+                query = PostgreSQLQuery.from_(
+                    self.emails_table
+                ).delete().where(
+                    self.emails_table.user_id == entity.id
+                )
+                await self.execute(query)
+
+            query = (
+                PostgreSQLQuery.into(self.emails_table)
+                .columns("id", "email", "user_id")
+                .insert(
+                    Parameter("$1"),
+                    Parameter("$2"),
+                    Parameter("$3")
+                )
+            )
+
+            await self.execute_many(
+                query,
+                ((uuid4(), e, entity.id) for e in entity.emails)
+            )
+
+    users_repo = UsersRepo(conn)
+    bob = await users_repo.get(name="Bob")
+    bob.emails = ["bob@test.com", "bobmail@test.com"]
+    await users_repo.update(bob)
+    john = await users_repo.get(name="John")
+    john.emails = ["john@test.com"]
+    await users_repo.update(john)
+    user = await users_repo.get(id=bob.id)
+    assert user.emails == bob.emails
+
+
+Fast prototyping
+----------------
