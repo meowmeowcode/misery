@@ -262,3 +262,27 @@ may change in the case of one-to-many relationship::
 
 Fast prototyping
 ----------------
+Sometimes when you're making a prototype
+or writing tests of the business logic
+the database schema may be unimportant at all.
+In this case instead of doing potentially useless job
+you can use a dictionary-based repository to store
+entities::
+
+    from misery.dictionary import DictRepo
+
+    data = {}
+
+    class UsersRepo(DictRepo[User]):
+        key = "users"
+
+    users_repo = UsersRepo(data)
+
+In this example the "data" dictionary will be used
+instead of a database. The "key" attribute of a repository
+serves like a name of a table to keep entities
+of different types separately.
+
+The dictionary-based repository implements the same protocol
+as the PostgreSQL-based one, so it can be replacad by it
+whenever you're ready.
