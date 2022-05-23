@@ -123,7 +123,7 @@ from your database, use different types of filters::
     bert = User(id=uuid4(), name="Bert")
     await users_repo.add(bert)
 
-    users = await users_repo.get_many(filters=[F.startswith("name", "B")])
+    users = await users_repo.get_many([F.startswith("name", "B")])
     assert set(u.name for u in users) == {"Bob", "Bert"}
 
 To know more about filters read the API documentation.
