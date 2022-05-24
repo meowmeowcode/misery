@@ -68,15 +68,11 @@ class PGRepo(Generic[T]):
 
     @property
     @abstractmethod
-    def table_name(self) -> str:
+    def table(self) -> Table:
         ...
 
     def __init__(self, conn: Connection) -> None:
-        self._conn = conn
-
-    @property
-    def table(self) -> Table:
-        return Table(self.table_name)
+        self.conn = conn
 
     @property
     def query(self) -> PostgreSQLQuery:
@@ -92,16 +88,8 @@ class PGRepo(Generic[T]):
     def dump(self, entity: T) -> dict:
         return dataclasses.asdict(entity)
 
-    async def execute(self, query: PostgreSQLQuery) -> None:
-        await self._conn.execute(str(query))
-
-    async def execute_many(
-        self, query: PostgreSQLQuery, args: Iterable[Sequence]
-    ) -> None:
-        await self._conn.executemany(str(query), args)
-
     async def fetch_one(self, query: PostgreSQLQuery) -> T:
-        data = await self._conn.fetchrow(str(query))
+        data = await self.conn.fetchrow(str(query))
 
         if data is None:
             raise NotFound
@@ -109,11 +97,8 @@ class PGRepo(Generic[T]):
         return self.load(dict(data))
 
     async def fetch_many(self, query: PostgreSQLQuery) -> Iterable[T]:
-        records = await self._conn.fetch(str(query))
+        records = await self.conn.fetch(str(query))
         return map(lambda x: self.load(dict(x)), records)
-
-    async def fetch_value(self, query: PostgreSQLQuery) -> Any:
-        return await self._conn.fetchval(str(query))
 
     async def add(self, entity: T) -> None:
         data = self.dump(entity)
@@ -122,10 +107,10 @@ class PGRepo(Generic[T]):
             .columns(*data.keys())
             .insert(*data.values())
         )
-        await self.execute(query)
-        await self.after_save(entity, new=True)
+        await self.conn.execute(str(query))
+        await self.after_add(entity)
 
-    async def after_save(self, entity: T, new: bool) -> None:
+    async def after_add(self, entity: T) -> None:
         pass
 
     async def add_many(self, entities: Iterable[T]) -> None:
@@ -139,8 +124,8 @@ class PGRepo(Generic[T]):
             .insert(*[Parameter(f"${n}") for n in range(1, len(data) + 1)])
         )
 
-        await self.execute_many(
-            query,
+        await self.conn.executemany(
+            str(query),
             itertools.chain(
                 [tuple(data.values())],
                 (tuple(self.dump(x).values()) for x in ientities),
@@ -165,12 +150,12 @@ class PGRepo(Generic[T]):
         for k, v in kwargs.items():
             query = query.where(self.table[k] == v)
 
-        await self._conn.fetchrow(str(query))
+        await self.conn.fetchrow(str(query))
         return await self.get(**kwargs)
 
     async def get_many(
         self,
-        filter_: Sequence[F] = (),
+        filters: Sequence[F] = (),
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
@@ -186,7 +171,7 @@ class PGRepo(Generic[T]):
             else:
                 query = query.orderby(field)
 
-        for f in filter_:
+        for f in filters:
             column = self.table[f.field]
 
             if f.type == FilterType.EQ:
@@ -250,12 +235,15 @@ class PGRepo(Generic[T]):
             query = query.set(k, v)
 
         query = query.where(self.table[self.id_field] == getattr(entity, self.id_field))
-        result = await self._conn.execute(str(query))
+        result = await self.conn.execute(str(query))
 
         if result == "UPDATE 0":
             raise NotFound
 
-        await self.after_save(entity, new=False)
+        await self.after_update(entity)
+
+    async def after_update(self, entity: T) -> None:
+        pass
 
     async def delete(self, **kwargs) -> None:
         query = PostgreSQLQuery.from_(self.table).delete()
@@ -263,7 +251,7 @@ class PGRepo(Generic[T]):
         for k, v in kwargs.items():
             query = query.where(self.table[k] == v)
 
-        await self.execute(query)
+        await self.conn.execute(str(query))
 
     async def exists(self, **kwargs) -> bool:
         query = PostgreSQLQuery.from_(self.table).select(1).limit(1)
@@ -271,7 +259,7 @@ class PGRepo(Generic[T]):
         for k, v in kwargs.items():
             query = query.where(self.table[k] == v)
 
-        data = await self.fetch_value(query)
+        data = await self.conn.fetchval(str(query))
         return data is not None
 
     async def count(self, **kwargs) -> int:
@@ -280,7 +268,7 @@ class PGRepo(Generic[T]):
         for k, v in kwargs.items():
             query = query.where(self.table[k] == v)
 
-        return await self.fetch_value(query)
+        return await self.conn.fetchval(str(query))
 
 
 _current_transaction = ContextVar("_current_transaction", default=None)

@@ -55,10 +55,11 @@ in your PostgreSQL database for this purpose::
 
 When we have an entity and a table to store it, we can define a repository::
 
+    from pypika import Table
     from misery.postgres import PGRepo
 
     class UsersRepo(PGRepo[User]):
-        table_name = "users"
+        table = Table("users")
 
 To use the repository we need to instantiate it::
 
@@ -161,7 +162,7 @@ may change in the case of one-to-many relationship::
 
     from typing import List
 
-    from pypika import Parameter, PostgreSQLQuery, Table
+    from pypika import Parameter, PostgreSQLQuery
     from pypika.terms import AggregateFunction
 
 
@@ -184,28 +185,26 @@ may change in the case of one-to-many relationship::
 
 
     class UsersRepo(PGRepo[User]):
-        table_name = "users"
+        table = Table("users")
         emails_table = Table("emails")
 
-        @property
-        def query(self) -> PostgreSQLQuery:
-            return PostgreSQLQuery.from_(
-                self.table
-            ).left_outer_join(
-                self.emails_table
-            ).on(
-                self.emails_table.user_id == self.table.id
-            ).groupby(
-                self.table.id,
-                self.table.name,
-            ).select(
-                self.table.id,
-                self.table.name,
-                AggregateFunction(
-                    "array_agg",
-                    self.emails_table.email,
-                ).as_("emails")
-            )
+        query = PostgreSQLQuery.from_(
+            table
+        ).left_outer_join(
+            emails_table
+        ).on(
+            emails_table.user_id == table.id
+        ).groupby(
+            table.id,
+            table.name,
+        ).select(
+            table.id,
+            table.name,
+            AggregateFunction(
+                "array_agg",
+                emails_table.email,
+            ).as_("emails")
+        )
 
         def dump(self, entity: User) -> dict:
             return {
@@ -223,17 +222,10 @@ may change in the case of one-to-many relationship::
                 ],
             )
 
-        async def after_save(self, entity: User, new: bool) -> None:
-            if not new:
-                # For simplicity,
-                # let's just delete all previous email rows
-                query = PostgreSQLQuery.from_(
-                    self.emails_table
-                ).delete().where(
-                    self.emails_table.user_id == entity.id
-                )
-                await self.execute(query)
+        async def after_add(self, entity: User) -> None:
+            await self._save_emails(entity)
 
+        async def _save_emails(self, entity: User) -> None:
             query = (
                 PostgreSQLQuery.into(self.emails_table)
                 .columns("id", "email", "user_id")
@@ -244,10 +236,22 @@ may change in the case of one-to-many relationship::
                 )
             )
 
-            await self.execute_many(
-                query,
+            await self.conn.executemany(
+                str(query),
                 ((uuid4(), e, entity.id) for e in entity.emails)
             )
+
+        async def after_update(self, entity: User) -> None:
+            # For simplicity,
+            # let's just delete all previous email rows
+            query = PostgreSQLQuery.from_(
+                self.emails_table
+            ).delete().where(
+                self.emails_table.user_id == entity.id
+            )
+            await self.conn.execute(str(query))
+
+            await self._save_emails(entity)
 
     users_repo = UsersRepo(conn)
     bob = await users_repo.get(name="Bob")

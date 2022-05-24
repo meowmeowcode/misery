@@ -71,14 +71,14 @@ class DictRepo(Generic[T]):
 
     async def get_many(
         self,
-        filter_: Sequence[F] = (),
+        filters: Sequence[F] = (),
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
     ) -> Iterable[T]:
         result = list(self._data.values())
 
-        for f in filter_:
+        for f in filters:
             op = self._filter_to_op(f)
             result = [x for x in result if op(self._get_field(x, f.field), f.value)]
 

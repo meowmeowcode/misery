@@ -68,7 +68,7 @@ async def test_get_many(
 
 
 @pytest.mark.parametrize(
-    "filter_, names",
+    "filters, names",
     [
         ([F.eq("name", "Insomnia")], ["Insomnia"]),
         ([F.neq("name", "Insomnia")], ["Hopelessness", "Helplessness", "Constipation"]),
@@ -120,7 +120,7 @@ async def test_get_many(
     ],
 )
 async def test_get_many_with_filter(
-    filter_: Sequence[F],
+    filters: Sequence[F],
     names: list[str],
     symptoms_repo: SymptomsRepo,
     hopelessness: Symptom,
@@ -128,7 +128,7 @@ async def test_get_many_with_filter(
     insomnia: Symptom,
     constipation: Symptom,
 ) -> None:
-    symptoms = await symptoms_repo.get_many(filter_=filter_)
+    symptoms = await symptoms_repo.get_many(filters)
     assert [s.name for s in symptoms] == names
 
 

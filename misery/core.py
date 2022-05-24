@@ -163,7 +163,7 @@ class Repo(Protocol[T]):
 
     async def get_many(
         self,
-        filter_: Sequence[F] = (),
+        filters: Sequence[F] = (),
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
