@@ -149,16 +149,38 @@ T = TypeVar("T")
 
 
 class Repo(Protocol[T]):
+    """The protocol which all repositories must implement.
+    """
+
     async def add(self, entity: T) -> None:
+        """Add a new entity to the repository.
+
+        :param entity: An entity to add.
+
+        """
         ...
 
     async def add_many(self, entities: Iterable[T]) -> None:
+        """Add many entities to the repository.
+
+        :param entities: Entities to add.
+        """
         ...
 
     async def get(self, **kwargs) -> T:
+        """Get an entity.
+        Raise a :exc:`misery.NotFound` if the entity is missing.
+
+        :param kwargs: Lookup parameters in the form of field-value pairs.
+        """
         ...
 
     async def get_for_update(self, **kwargs) -> T:
+        """Get an entity and lock it for update.
+        Raise a :exc:`misery.NotFound` if the entity is missing.
+
+        :param kwargs: Lookup parameters in the form of field-value pairs.
+        """
         ...
 
     async def get_many(
@@ -168,22 +190,56 @@ class Repo(Protocol[T]):
         limit: Optional[int] = None,
         page: int = 1,
     ) -> Iterable[T]:
+        """Get many entities.
+
+        :param filters: A sequence of filters.
+        :param order: A sequence of fields by which entities
+            must be ordered. If an item of the sequence
+            starts with the "-" character
+            then the descending ordering will be applied for this field.
+        :param limit: Maximum number of entities on the requested page.
+        :param page: A number of page to get when the ``limit`` parameter
+            is used.
+        """
         ...
 
     async def update(self, entity: T) -> None:
+        """Save an updated entity.
+        Raise a :exc:`misery.NotFound` if the entity
+        is not present in the repository.
+
+        :param entity: An updated entity.
+        """
         ...
 
     async def delete(self, **kwargs) -> None:
+        """Delete entities. When ``kwargs`` are empty, delete
+        everything.
+
+        :param kwargs: Lookup parameters in the form of field-value pairs.
+        """
         ...
 
     async def exists(self, **kwargs) -> bool:
+        """Check if there is an entity for the given lookup parameters.
+
+        :param kwargs: Lookup parameters in the form of field-value pairs.
+        """
         ...
 
     async def count(self, **kwargs) -> int:
+        """Count entities matching the given lookup parameters.
+        If there is no lookup parameters, count all entities in
+        the repository.
+
+        :param kwargs: Lookup parameters in the form of field-value pairs.
+        """
         ...
 
 
 class NotFound(Exception):
+    """An error to raise when an entity cannot be found
+    in a repository."""
     pass
 
 

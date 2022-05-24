@@ -25,3 +25,4 @@ Contents
    :maxdepth: 2
 
    guide
+   api
