@@ -11,5 +11,8 @@ Classes
 .. autoclass:: Repo()
     :members:
 
+.. autoclass:: F
+    :members:
+
 .. module:: misery
 .. autoclass:: NotFound

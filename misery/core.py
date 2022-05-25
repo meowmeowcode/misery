@@ -40,6 +40,8 @@ class FilterType(Enum):
 
 
 class F:
+    """An object which is used for filtering of entities
+    before getting them from a repository."""
     def __init__(self, type: FilterType, field: str, value: Any) -> None:
         self.type = type
         self.field = field
@@ -50,98 +52,198 @@ class F:
 
     @classmethod
     def eq(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a value in a ``field`` that is
+        equal to a given one.
+        """
         return cls(FilterType.EQ, field, value)
 
     @classmethod
     def lt(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a value in a ``field`` that is
+        less than a given one.
+        """
         return cls(FilterType.LT, field, value)
 
     @classmethod
     def lte(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a value in a ``field`` that is
+        less than or equal to a given one.
+        """
         return cls(FilterType.LTE, field, value)
 
     @classmethod
     def gt(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a value in a ``field`` that is
+        greater than a given one.
+        """
         return cls(FilterType.GT, field, value)
 
     @classmethod
     def gte(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a value in a ``field`` that is
+        greater than or equal to a given one.
+        """
         return cls(FilterType.GTE, field, value)
 
     @classmethod
     def neq(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a value in a ``field`` that is
+        not equal to a given one.
+        """
         return cls(FilterType.NEQ, field, value)
 
     @classmethod
     def contains(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a ``field`` that contains a ``value``.
+        """
         return cls(FilterType.CONTAINS, field, value)
 
     @classmethod
     def icontains(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that contains a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.ICONTAINS, field, value)
 
     @classmethod
     def ncontains(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't contain a ``value``.
+        """
         return cls(FilterType.NCONTAINS, field, value)
 
     @classmethod
     def nicontains(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't contain a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.NICONTAINS, field, value)
 
     @classmethod
     def startswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that starts with a ``value``.
+        """
         return cls(FilterType.STARTSWITH, field, value)
 
     @classmethod
     def istartswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that starts with a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.ISTARTSWITH, field, value)
 
     @classmethod
     def nstartswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't start with a ``value``.
+        """
         return cls(FilterType.NSTARTSWITH, field, value)
 
     @classmethod
     def nistartswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't start with a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.NISTARTSWITH, field, value)
 
     @classmethod
     def endswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that ends with a ``value``.
+        """
         return cls(FilterType.ENDSWITH, field, value)
 
     @classmethod
     def nendswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't end with a ``value``.
+        """
         return cls(FilterType.NENDSWITH, field, value)
 
     @classmethod
     def iendswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that ends with a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.IENDSWITH, field, value)
 
     @classmethod
     def niendswith(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't end with a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.NIENDSWITH, field, value)
 
     @classmethod
     def matches(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that matches
+        a regular expression in a ``value``.
+        """
         return cls(FilterType.MATCHES, field, value)
 
     @classmethod
     def imatches(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that matches
+        a regular expression in a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.IMATCHES, field, value)
 
     @classmethod
     def nmatches(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't match
+        a regular expression in a ``value``.
+        """
         return cls(FilterType.NMATCHES, field, value)
 
     @classmethod
     def nimatches(cls, field: str, value: str) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't match
+        a regular expression in a ``value``.
+
+        Case-insensitive version.
+        """
         return cls(FilterType.NIMATCHES, field, value)
 
     @classmethod
     def in_(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a ``field`` that has a value
+        contained in a given one.
+        """
         return cls(FilterType.IN, field, value)
 
     @classmethod
     def nin(cls, field: str, value: Any) -> F:
+        """Make a filter to find entities
+        with a ``field`` that doesn't have
+        a value contained in a given one.
+        """
         return cls(FilterType.NIN, field, value)
 
 
