@@ -14,5 +14,8 @@ Classes
 .. autoclass:: F
     :members:
 
+.. autoclass:: TransactionManager
+    :special-members: __aenter__, __aexit__
+
 .. module:: misery
 .. autoclass:: NotFound

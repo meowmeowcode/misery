@@ -42,6 +42,7 @@ class FilterType(Enum):
 class F:
     """An object which is used for filtering of entities
     before getting them from a repository."""
+
     def __init__(self, type: FilterType, field: str, value: Any) -> None:
         self.type = type
         self.field = field
@@ -251,8 +252,7 @@ T = TypeVar("T")
 
 
 class Repo(Protocol[T]):
-    """The protocol which all repositories must implement.
-    """
+    """The protocol which all repositories must implement."""
 
     async def add(self, entity: T) -> None:
         """Add a new entity to the repository.
@@ -342,7 +342,18 @@ class Repo(Protocol[T]):
 class NotFound(Exception):
     """An error to raise when an entity cannot be found
     in a repository."""
+
     pass
 
 
-TransactionManager = AbstractAsyncContextManager
+class TransactionManager(Protocol):
+    """A protocol of an object which is used
+    for management of transactions."""
+
+    async def __aenter__(self) -> None:
+        """Start a transaction."""
+        ...
+
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        """Commit or rollback a transaction."""
+        ...
