@@ -2,13 +2,19 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import AsyncGenerator
-from typing import Sequence
-from typing import Union
+from typing import (
+    Any,
+    AsyncGenerator,
+    Sequence,
+    Union,
+)
 
 import asyncpg  # type: ignore
 import pytest  # type: ignore
-from asyncpg import Connection  # type: ignore
+from asyncpg import (  # type: ignore
+    Connection,
+    Pool,
+)
 from pypika import Table  # type: ignore
 
 from misery.core import (
@@ -44,9 +50,9 @@ def conn_str() -> str:
     return "postgresql://misery:misery@localhost/misery"
 
 
-@pytest.fixture(scope="session")
-async def conn(conn_str: str) -> Connection:
-    return await asyncpg.connect(conn_str)
+@pytest.fixture(scope="session", params=[asyncpg.connect, asyncpg.create_pool])
+async def conn(request: Any, conn_str: str) -> Union[Connection, Pool]:
+    return await request.param(conn_str)
 
 
 @pytest.fixture(scope="session", autouse=True)

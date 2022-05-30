@@ -4,15 +4,21 @@ import typing
 from abc import abstractmethod
 from contextvars import ContextVar
 from enum import Enum
-from typing import Any
-from typing import Generic
-from typing import Iterable
-from typing import Optional
-from typing import Protocol
-from typing import Sequence
-from typing import TypeVar
+from typing import (
+    Any,
+    Generic,
+    Iterable,
+    Optional,
+    Protocol,
+    Sequence,
+    TypeVar,
+    Union,
+)
 
-from asyncpg import Connection  # type: ignore
+from asyncpg import (  # type: ignore
+    Connection,
+    Pool,
+)
 from pypika import (  # type: ignore
     Order,
     Parameter,
@@ -71,8 +77,12 @@ class PGRepo(Generic[T]):
     def table(self) -> Table:
         ...
 
-    def __init__(self, conn: Connection) -> None:
-        self.conn = conn
+    def __init__(self, conn: Union[Connection, Pool]) -> None:
+        self._conn = conn
+
+    @property
+    def conn(self) -> Connection:
+        return _current_conn.get() or self._conn
 
     @property
     def query(self) -> PostgreSQLQuery:
@@ -272,14 +282,28 @@ class PGRepo(Generic[T]):
 
 
 _current_transaction = ContextVar("_current_transaction", default=None)
+_current_conn = ContextVar("_current_conn", default=None)
 
 
 class PGTransactionManager:
-    def __init__(self, conn: Connection) -> None:
-        self._conn = conn
+    def __init__(self, conn: Union[Connection, Pool]) -> None:
+        if isinstance(conn, Pool):
+            self._pool, self._conn = conn, None
+        else:
+            self._pool, self._conn = None, conn
+
+    @property
+    def conn(self) -> Connection:
+        if self._pool is None:
+            return self._conn
+
+        return _current_conn.get()
 
     async def __aenter__(self) -> None:
-        t = self._conn.transaction()
+        if self._pool is not None:
+            _current_conn.set(await self._pool.acquire())
+
+        t = self.conn.transaction()
         await t.__aenter__()
         _current_transaction.set(t)
 
@@ -289,3 +313,7 @@ class PGTransactionManager:
         if t is not None:
             await t.__aexit__(exc_type, exc, tb)
             _current_transaction.set(None)
+
+        if _current_conn.get() is not None:
+            await self._pool.release(_current_conn.get())
+            _current_conn.set(None)
