@@ -56,9 +56,9 @@ in your PostgreSQL database for this purpose::
 When we have an entity and a table to store it, we can define a repository::
 
     from pypika import Table
-    from misery.postgres import PGRepo
+    from misery.postgres import PostgresRepo
 
-    class UsersRepo(PGRepo[User]):
+    class UsersRepo(PostgresRepo[User]):
         table = Table("users")
 
 To use the repository we need to instantiate it::
@@ -142,9 +142,9 @@ Transactions
 There is a special object for transactions.
 Just create it and use as a context manager::
 
-    from misery.postgres import PGTransactionManager
+    from misery.postgres import PostgresTransactionManager
 
-    transaction_manager = PGTransactionManager(conn)
+    transaction_manager = PostgresTransactionManager(conn)
 
     async with transaction_manager:
         await users_repo.add(User(id=uuid4(), name="Mike"))
@@ -184,7 +184,7 @@ may change in the case of one-to-many relationship::
     )
 
 
-    class UsersRepo(PGRepo[User]):
+    class UsersRepo(PostgresRepo[User]):
         table = Table("users")
         emails_table = Table("emails")
 

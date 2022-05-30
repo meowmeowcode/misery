@@ -23,8 +23,8 @@ from misery.core import (
     TransactionManager,
 )
 
-from misery.postgres import PGRepo
-from misery.postgres import PGTransactionManager
+from misery.postgres import PostgresRepo
+from misery.postgres import PostgresTransactionManager
 from misery import F
 
 from .base import (
@@ -34,7 +34,7 @@ from .base import (
 )
 
 
-class SymptomsPGRepo(PGRepo[Symptom]):
+class SymptomsPostgresRepo(PostgresRepo[Symptom]):
     table = Table("symptoms")
 
 
@@ -78,13 +78,13 @@ async def clean_db(db_schema: None, conn: Connection) -> None:
 
 
 @pytest.fixture
-def symptoms_repo(conn: Connection) -> SymptomsPGRepo:
-    return SymptomsPGRepo(conn)
+def symptoms_repo(conn: Connection) -> SymptomsPostgresRepo:
+    return SymptomsPostgresRepo(conn)
 
 
 @pytest.fixture
-def transaction_manager(conn: Connection) -> PGTransactionManager:
-    return PGTransactionManager(conn)
+def transaction_manager(conn: Connection) -> PostgresTransactionManager:
+    return PostgresTransactionManager(conn)
 
 
 async def test_add_many(symptoms_repo: SymptomsRepo) -> None:

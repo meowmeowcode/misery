@@ -69,7 +69,7 @@ class _NotIRegexp(BasicCriterion):
         )
 
 
-class PGRepo(Generic[T]):
+class PostgresRepo(Generic[T]):
     id_field = "id"
 
     @property
@@ -285,7 +285,7 @@ _current_transaction = ContextVar("_current_transaction", default=None)
 _current_conn = ContextVar("_current_conn", default=None)
 
 
-class PGTransactionManager:
+class PostgresTransactionManager:
     def __init__(self, conn: Union[Connection, Pool]) -> None:
         if isinstance(conn, Pool):
             self._pool, self._conn = conn, None
