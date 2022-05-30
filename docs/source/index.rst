@@ -26,3 +26,4 @@ Contents
 
    guide
    api
+   for_contributors
