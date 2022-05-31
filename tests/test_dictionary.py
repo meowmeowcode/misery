@@ -157,7 +157,7 @@ async def test_get_many_with_order(
     helplessness: Symptom,
     constipation: Symptom,
     insomnia: Symptom,
-):
+) -> None:
     symptoms = await symptoms_repo.get_many(order=order)
     assert [s.name for s in symptoms] == names
 
@@ -179,7 +179,7 @@ async def test_get_many_with_page_and_limit(
     helplessness: Symptom,
     insomnia: Symptom,
     constipation: Symptom,
-):
+) -> None:
     symptoms = await symptoms_repo.get_many(limit=limit, page=page)
     assert [s.name for s in symptoms] == names
 

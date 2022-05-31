@@ -179,7 +179,7 @@ class PostgresRepo(Generic[T]):
             ),
         )
 
-    async def get(self, **kwargs) -> T:
+    async def get(self, **kwargs: Any) -> T:
         query = self.query.limit(1)
 
         for k, v in kwargs.items():
@@ -187,7 +187,7 @@ class PostgresRepo(Generic[T]):
 
         return await self.fetch_one(query)
 
-    async def get_for_update(self, **kwargs) -> T:
+    async def get_for_update(self, **kwargs: Any) -> T:
         query = (
             PostgreSQLQuery.from_(self.table)
             .select(self.table[self.id_field])
@@ -297,7 +297,7 @@ class PostgresRepo(Generic[T]):
         """
         pass
 
-    async def delete(self, **kwargs) -> None:
+    async def delete(self, **kwargs: Any) -> None:
         query = PostgreSQLQuery.from_(self.table).delete()
 
         for k, v in kwargs.items():
@@ -305,7 +305,7 @@ class PostgresRepo(Generic[T]):
 
         await self.conn.execute(str(query))
 
-    async def exists(self, **kwargs) -> bool:
+    async def exists(self, **kwargs: Any) -> bool:
         query = PostgreSQLQuery.from_(self.table).select(1).limit(1)
 
         for k, v in kwargs.items():
@@ -314,7 +314,7 @@ class PostgresRepo(Generic[T]):
         data = await self.conn.fetchval(str(query))
         return data is not None
 
-    async def count(self, **kwargs) -> int:
+    async def count(self, **kwargs: Any) -> int:
         query = PostgreSQLQuery.from_(self.table).select(fn.Count("*"))
 
         for k, v in kwargs.items():

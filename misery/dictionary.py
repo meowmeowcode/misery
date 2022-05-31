@@ -73,17 +73,17 @@ class DictRepo(Generic[T]):
         for entity in entities:
             await self.add(entity)
 
-    async def get(self, **kwargs) -> T:
+    async def get(self, **kwargs: Any) -> T:
         for entity in self.data.values():
             if self._matches(entity, **kwargs):
                 return copy.deepcopy(entity)
 
         raise NotFound
 
-    async def get_for_update(self, **kwargs) -> T:
+    async def get_for_update(self, **kwargs: Any) -> T:
         return await self.get(**kwargs)
 
-    def _matches(self, entity, **kwargs) -> bool:
+    def _matches(self, entity: T, **kwargs: Any) -> bool:
         return all(getattr(entity, k) == v for k, v in kwargs.items())
 
     async def get_many(
@@ -99,14 +99,13 @@ class DictRepo(Generic[T]):
             op = self._filter_to_op(f)
             result = [x for x in result if op(self._get_field(x, f.field), f.value)]
 
-        def sorting_key(x):
-            t = tuple(
+        def sorting_key(x: Any) -> tuple:
+            return tuple(
                 _Desc(self._get_field(x, f[1:]))
                 if f.startswith("-")
                 else self._get_field(x, f)
                 for f in order
             )
-            return t
 
         result = sorted(result, key=sorting_key)
 
@@ -145,7 +144,7 @@ class DictRepo(Generic[T]):
     def _filter_to_op(self, f: F) -> Callable:
         return self._FILTERS_MAP[f.type]
 
-    def _get_field(self, obj: Any, field) -> Any:
+    def _get_field(self, obj: Any, field: str) -> Any:
         return reduce(lambda x, y: getattr(x, y), field.split("."), obj)
 
     async def update(self, entity: T) -> None:
@@ -154,15 +153,15 @@ class DictRepo(Generic[T]):
             raise NotFound
         self.data[id] = copy.deepcopy(entity)
 
-    async def delete(self, **kwargs) -> None:
+    async def delete(self, **kwargs: Any) -> None:
         for id, item in list(self.data.items()):
             if self._matches(item, **kwargs):
                 del self.data[id]
 
-    async def exists(self, **kwargs) -> bool:
+    async def exists(self, **kwargs: Any) -> bool:
         return any(self._matches(entity, **kwargs) for entity in self.data.values())
 
-    async def count(self, **kwargs) -> int:
+    async def count(self, **kwargs: Any) -> int:
         if kwargs:
             return sum(
                 1 for entity in self.data.values() if self._matches(entity, **kwargs)

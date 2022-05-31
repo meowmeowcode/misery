@@ -269,7 +269,7 @@ class Repo(Protocol[T]):
         """
         ...
 
-    async def get(self, **kwargs) -> T:
+    async def get(self, **kwargs: Any) -> T:
         """Get an entity.
         Raise a :exc:`misery.NotFound` if the entity is missing.
 
@@ -277,7 +277,7 @@ class Repo(Protocol[T]):
         """
         ...
 
-    async def get_for_update(self, **kwargs) -> T:
+    async def get_for_update(self, **kwargs: Any) -> T:
         """Get an entity and lock it for update.
         Raise a :exc:`misery.NotFound` if the entity is missing.
 
@@ -314,7 +314,7 @@ class Repo(Protocol[T]):
         """
         ...
 
-    async def delete(self, **kwargs) -> None:
+    async def delete(self, **kwargs: Any) -> None:
         """Delete entities. When ``kwargs`` are empty, delete
         everything.
 
@@ -322,14 +322,14 @@ class Repo(Protocol[T]):
         """
         ...
 
-    async def exists(self, **kwargs) -> bool:
+    async def exists(self, **kwargs: Any) -> bool:
         """Check if there is an entity for the given lookup parameters.
 
         :param kwargs: Lookup parameters in the form of field-value pairs.
         """
         ...
 
-    async def count(self, **kwargs) -> int:
+    async def count(self, **kwargs: Any) -> int:
         """Count entities matching the given lookup parameters.
         If there is no lookup parameters, count all entities in
         the repository.
