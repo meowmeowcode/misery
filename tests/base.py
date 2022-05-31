@@ -4,7 +4,7 @@ from enum import Enum
 from functools import total_ordering
 from typing import Any
 
-from misery.core import Repo
+from misery import Repo
 
 
 @total_ordering

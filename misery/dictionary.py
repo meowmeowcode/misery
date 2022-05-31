@@ -34,30 +34,47 @@ class _Desc:
 
 
 class DictRepo(Generic[T]):
+    """An implementation of the :class:`misery.Repo` protocol.
+    It uses a dictionary to store entities.
+    """
+
     id_field = "id"
+    """A name of the ID field of an entity."""
 
     @property
     @abstractmethod
     def key(self) -> str:
+        """A key inside the ``storage`` dictionary.
+        The value of this key is also a dictionary.
+        A repository uses this nested dictionary
+        to save entities.
+        """
         ...
 
     def __init__(self, storage: dict) -> None:
+        """:param storage: a dictionary to use as a storage.
+        One storage can be shared between many repositories.
+        """
         self.storage = storage
-        self.storage[self.key] = {}
+        self.storage[self.key] = self.storage.get(self.key, {})
 
     @property
-    def _data(self) -> dict[Any, T]:
+    def data(self) -> dict[Any, T]:
+        """A nested dictionary inside the ``storage`` dictionary.
+        A repository uses this nested dictionary
+        to save entities.
+        """
         return self.storage[self.key]
 
     async def add(self, entity: T) -> None:
-        self._data[getattr(entity, self.id_field)] = copy.deepcopy(entity)
+        self.data[getattr(entity, self.id_field)] = copy.deepcopy(entity)
 
     async def add_many(self, entities: Iterable[T]) -> None:
         for entity in entities:
             await self.add(entity)
 
     async def get(self, **kwargs) -> T:
-        for entity in self._data.values():
+        for entity in self.data.values():
             if self._matches(entity, **kwargs):
                 return copy.deepcopy(entity)
 
@@ -76,7 +93,7 @@ class DictRepo(Generic[T]):
         limit: Optional[int] = None,
         page: int = 1,
     ) -> Iterable[T]:
-        result = list(self._data.values())
+        result = list(self.data.values())
 
         for f in filters:
             op = self._filter_to_op(f)
@@ -133,27 +150,31 @@ class DictRepo(Generic[T]):
 
     async def update(self, entity: T) -> None:
         id = getattr(entity, self.id_field)
-        if id not in self._data:
+        if id not in self.data:
             raise NotFound
-        self._data[id] = copy.deepcopy(entity)
+        self.data[id] = copy.deepcopy(entity)
 
     async def delete(self, **kwargs) -> None:
-        for id, item in list(self._data.items()):
+        for id, item in list(self.data.items()):
             if self._matches(item, **kwargs):
-                del self._data[id]
+                del self.data[id]
 
     async def exists(self, **kwargs) -> bool:
-        return any(self._matches(entity, **kwargs) for entity in self._data.values())
+        return any(self._matches(entity, **kwargs) for entity in self.data.values())
 
     async def count(self, **kwargs) -> int:
         if kwargs:
             return sum(
-                1 for entity in self._data.values() if self._matches(entity, **kwargs)
+                1 for entity in self.data.values() if self._matches(entity, **kwargs)
             )
-        return len(self._data)
+        return len(self.data)
 
 
 class DictTransactionManager:
+    """An implementation of the :class:`misery.TransactionManager` protocol.
+    It uses a dictionary to store entities.
+    """
+
     def __init__(self, storage: dict) -> None:
         self._storage = storage
         self._copy: dict = {}

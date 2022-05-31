@@ -40,7 +40,7 @@ class FilterType(Enum):
 
 
 class F:
-    """An object which is used for filtering of entities
+    """An object that is used for filtering of entities
     before getting them from a repository."""
 
     def __init__(self, type: FilterType, field: str, value: Any) -> None:
@@ -252,7 +252,7 @@ T = TypeVar("T")
 
 
 class Repo(Protocol[T]):
-    """The protocol which all repositories must implement."""
+    """The protocol that all repositories must implement."""
 
     async def add(self, entity: T) -> None:
         """Add a new entity to the repository.

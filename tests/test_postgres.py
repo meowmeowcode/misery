@@ -17,15 +17,17 @@ from asyncpg import (  # type: ignore
 )
 from pypika import Table  # type: ignore
 
-from misery.core import (
+from misery import (
+    F,
     NotFound,
     Repo,
     TransactionManager,
 )
 
-from misery.postgres import PostgresRepo
-from misery.postgres import PostgresTransactionManager
-from misery import F
+from misery.postgres import (
+    PostgresRepo,
+    PostgresTransactionManager,
+)
 
 from .base import (
     Symptom,

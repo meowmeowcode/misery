@@ -70,22 +70,45 @@ class _NotIRegexp(BasicCriterion):
 
 
 class PostgresRepo(Generic[T]):
+    """An implementation of the :class:`misery.Repo` protocol
+    that uses asyncpg to work with PostgreSQL.
+    """
+
     id_field = "id"
+    """A name of the ID field of an entity."""
 
     @property
     @abstractmethod
     def table(self) -> Table:
+        """The main table of a repository.
+        It is used to auto-generate SQL queries.
+        """
         ...
 
     def __init__(self, conn: Union[Connection, Pool]) -> None:
+        """:param conn: a connection or a pool that
+        will be used for interaction with a database.
+        """
         self._conn = conn
 
     @property
-    def conn(self) -> Connection:
+    def conn(self) -> Union[Connection, Pool]:
+        """A connection or a pool that is used
+        for interaction with a database.
+
+        Use this property in your custom methods.
+        """
         return _current_conn.get() or self._conn
 
     @property
     def query(self) -> PostgreSQLQuery:
+        """A query to select records from a database.
+
+        Override this property when you need
+        something more complex than selecting
+        of all columns from the main table
+        of a repository.
+        """
         return PostgreSQLQuery.from_(self.table).select("*")
 
     @property
@@ -93,12 +116,23 @@ class PostgresRepo(Generic[T]):
         return typing.get_args(self.__orig_bases__[0])[0]  # type: ignore
 
     def load(self, record: dict) -> T:
+        """Map a database record to an entity.
+
+        Override this method for mapping customization.
+        """
         return self._entity_type(**record)
 
     def dump(self, entity: T) -> dict:
+        """Map an entity to a database record.
+
+        Override this method for mapping customization.
+        """
         return dataclasses.asdict(entity)
 
     async def fetch_one(self, query: PostgreSQLQuery) -> T:
+        """Find a record in a database
+        and map it to an entity.
+        """
         data = await self.conn.fetchrow(str(query))
 
         if data is None:
@@ -107,6 +141,9 @@ class PostgresRepo(Generic[T]):
         return self.load(dict(data))
 
     async def fetch_many(self, query: PostgreSQLQuery) -> Iterable[T]:
+        """Find many records in a database
+        and map them to entities.
+        """
         records = await self.conn.fetch(str(query))
         return map(lambda x: self.load(dict(x)), records)
 
@@ -253,6 +290,11 @@ class PostgresRepo(Generic[T]):
         await self.after_update(entity)
 
     async def after_update(self, entity: T) -> None:
+        """Do something after update.
+
+        By default this method does nothing.
+        Override it to add some custom behaviour.
+        """
         pass
 
     async def delete(self, **kwargs) -> None:
@@ -286,6 +328,10 @@ _current_conn = ContextVar("_current_conn", default=None)
 
 
 class PostgresTransactionManager:
+    """An implementation of the :class:`misery.TransactionManager` protocol
+    that uses asyncpg to work with PostgreSQL.
+    """
+
     def __init__(self, conn: Union[Connection, Pool]) -> None:
         if isinstance(conn, Pool):
             self._pool, self._conn = conn, None

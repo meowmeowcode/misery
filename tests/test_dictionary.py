@@ -4,15 +4,17 @@ from typing import Sequence
 
 import pytest  # type: ignore
 
-from misery.core import (
+from misery import (
+    F,
     NotFound,
     Repo,
     TransactionManager,
 )
 
-from misery.dictionary import DictRepo
-from misery.dictionary import DictTransactionManager
-from misery import F
+from misery.dictionary import (
+    DictRepo,
+    DictTransactionManager,
+)
 
 from .base import (
     Symptom,

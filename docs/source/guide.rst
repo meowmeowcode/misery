@@ -53,7 +53,7 @@ in your PostgreSQL database for this purpose::
     )
 
 
-When we have an entity and a table to store it, we can define a repository::
+When we have an entity and a table to store it in, we can define a repository::
 
     from pypika import Table
     from misery.postgres import PostgresRepo
@@ -269,7 +269,8 @@ Fast prototyping
 Sometimes when you're making a prototype
 or writing tests of the business logic
 the database schema may be unimportant at all.
-In this case instead of doing potentially useless job
+In this case instead of prematurely thinking
+about details of data storage
 you can use a dictionary-based repository to store
 entities::
 
@@ -285,8 +286,27 @@ entities::
 In this example the "data" dictionary will be used
 instead of a database. The "key" attribute of a repository
 serves like a name of a table to keep entities
-of different types separately.
+of different types in separate collections inside this
+dictionary.
 
 The dictionary-based repository implements the same protocol
 as the PostgreSQL-based one, so it can be replacad by it
 whenever you're ready.
+
+
+Protocols
+---------
+
+It's better to use protocols in annotations because
+it makes easier switching from one implementation to another.
+For the repository from the previous example
+we could define a protocol this way::
+
+    from misery import Repo
+
+    class UsersRepoProto(Repo[User]):
+        pass
+
+To use the protocol of a transaction manager, just import it::
+
+    from misery import TransactionManager
