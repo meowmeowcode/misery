@@ -33,12 +33,12 @@ def storage() -> dict:
 
 
 @pytest.fixture
-def symptoms_repo(storage: dict) -> SymptomsDictRepo:
+def symptoms_repo(storage: dict) -> SymptomsRepo:
     return SymptomsDictRepo(storage)
 
 
 @pytest.fixture
-def transaction_manager(storage: dict) -> DictTransactionManager:
+def transaction_manager(storage: dict) -> TransactionManager:
     return DictTransactionManager(storage)
 
 

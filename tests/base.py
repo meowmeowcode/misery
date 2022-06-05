@@ -25,5 +25,4 @@ class Symptom:
     type: SymptomType
 
 
-class SymptomsRepo(Repo[Symptom]):
-    pass
+SymptomsRepo = Repo[Symptom]

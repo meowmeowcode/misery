@@ -81,12 +81,12 @@ async def clean_db(db_schema: None, conn: Connection) -> None:
 
 
 @pytest.fixture
-def symptoms_repo(conn: Connection) -> SymptomsPostgresRepo:
+def symptoms_repo(conn: Connection) -> SymptomsRepo:
     return SymptomsPostgresRepo(conn)
 
 
 @pytest.fixture
-def transaction_manager(conn: Connection) -> PostgresTransactionManager:
+def transaction_manager(conn: Connection) -> TransactionManager:
     return PostgresTransactionManager(conn)
 
 

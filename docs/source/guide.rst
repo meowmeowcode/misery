@@ -304,8 +304,7 @@ we could define a protocol this way::
 
     from misery import Repo
 
-    class UsersRepoProto(Repo[User]):
-        pass
+    UsersRepoProto = Repo[User]
 
 To use the protocol of a transaction manager, just import it::
 
