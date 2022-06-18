@@ -34,34 +34,34 @@ class _Desc:
 
 
 class DictRepo(Generic[T]):
-    """An implementation of the :class:`misery.Repo` protocol.
+    """Implementation of the :class:`misery.Repo` protocol.
     It uses a dictionary to store entities.
     """
 
     id_field = "id"
-    """A name of the ID field of an entity."""
+    """Name of the ID field of an entity."""
 
     @property
     @abstractmethod
     def key(self) -> str:
-        """A key inside the ``storage`` dictionary.
+        """Key inside the ``storage`` dictionary.
         The value of this key is also a dictionary.
-        A repository uses this nested dictionary
+        The repository uses this nested dictionary
         to save entities.
         """
         ...
 
     def __init__(self, storage: dict) -> None:
-        """:param storage: a dictionary to use as a storage.
-        One storage can be shared between many repositories.
+        """:param storage: Dictionary to use as a storage space.
+        A storage space can be shared between multiple repositories.
         """
         self.storage = storage
         self.storage[self.key] = self.storage.get(self.key, {})
 
     @property
     def data(self) -> dict[Any, T]:
-        """A nested dictionary inside the ``storage`` dictionary.
-        A repository uses this nested dictionary
+        """Nested dictionary inside the ``storage`` dictionary.
+        The repository uses this nested dictionary
         to save entities.
         """
         return self.storage[self.key]
@@ -170,7 +170,7 @@ class DictRepo(Generic[T]):
 
 
 class DictTransactionManager:
-    """An implementation of the :class:`misery.TransactionManager` protocol.
+    """Implementation of the :class:`misery.TransactionManager` protocol.
     It uses a dictionary to store entities.
     """
 

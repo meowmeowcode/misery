@@ -70,31 +70,31 @@ class _NotIRegexp(BasicCriterion):
 
 
 class PostgresRepo(Generic[T]):
-    """An implementation of the :class:`misery.Repo` protocol
-    that uses asyncpg to work with PostgreSQL.
+    """Implementation of the :class:`misery.Repo` protocol
+    that uses asyncpg to communicate with PostgreSQL.
     """
 
     id_field = "id"
-    """A name of the ID field of an entity."""
+    """Name of the ID field of an entity."""
 
     @property
     @abstractmethod
     def table(self) -> Table:
-        """The main table of a repository.
-        It is used to auto-generate SQL queries.
+        """Main table of the repository.
+        It is used to autogenerate SQL queries.
         """
         ...
 
     def __init__(self, conn: Union[Connection, Pool]) -> None:
-        """:param conn: a connection or a pool that
-        will be used for interaction with a database.
+        """:param conn: Connection or pool that
+        will be used for interaction with the database.
         """
         self._conn = conn
 
     @property
     def conn(self) -> Union[Connection, Pool]:
-        """A connection or a pool that is used
-        for interaction with a database.
+        """Connection or pool that is used
+        for interaction with the database.
 
         Use this property in your custom methods.
         """
@@ -102,12 +102,12 @@ class PostgresRepo(Generic[T]):
 
     @property
     def query(self) -> PostgreSQLQuery:
-        """A query to select records from a database.
+        """Query to select records from the database.
 
         Override this property when you need
         something more complex than selecting
-        of all columns from the main table
-        of a repository.
+        all columns from the main table
+        of the repository.
         """
         return PostgreSQLQuery.from_(self.table).select("*")
 
@@ -118,19 +118,19 @@ class PostgresRepo(Generic[T]):
     def load(self, record: dict) -> T:
         """Map a database record to an entity.
 
-        Override this method for mapping customization.
+        Override this method if needed.
         """
         return self._entity_type(**record)
 
     def dump(self, entity: T) -> dict:
         """Map an entity to a database record.
 
-        Override this method for mapping customization.
+        Override this method if needed.
         """
         return dataclasses.asdict(entity)
 
     async def fetch_one(self, query: PostgreSQLQuery) -> T:
-        """Find a record in a database
+        """Find a record in the database
         and map it to an entity.
         """
         data = await self.conn.fetchrow(str(query))
@@ -141,7 +141,7 @@ class PostgresRepo(Generic[T]):
         return self.load(dict(data))
 
     async def fetch_many(self, query: PostgreSQLQuery) -> Iterable[T]:
-        """Find many records in a database
+        """Find multiple records in the database
         and map them to entities.
         """
         records = await self.conn.fetch(str(query))
@@ -290,10 +290,10 @@ class PostgresRepo(Generic[T]):
         await self.after_update(entity)
 
     async def after_update(self, entity: T) -> None:
-        """Do something after update.
+        """Action after update.
 
-        By default this method does nothing.
-        Override it to add some custom behaviour.
+        By default, this method doesn't do anything.
+        Override it to your liking.
         """
         pass
 
@@ -328,8 +328,8 @@ _current_conn = ContextVar("_current_conn", default=None)
 
 
 class PostgresTransactionManager:
-    """An implementation of the :class:`misery.TransactionManager` protocol
-    that uses asyncpg to work with PostgreSQL.
+    """Implementation of the :class:`misery.TransactionManager` protocol
+    that uses asyncpg to communicate with PostgreSQL.
     """
 
     def __init__(self, conn: Union[Connection, Pool]) -> None:

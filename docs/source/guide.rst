@@ -4,18 +4,18 @@
 Guide
 =====
 
-In examples on this page we’re going to use PostgreSQL because historically it is the first database supported by **misery**.
+For examples on this page, we’re going to use PostgreSQL because historically it's the first database supported by **misery**.
 
 Installation
 ------------
 
-At first you need to install **misery** itself:
+First, install **misery** itself:
 
 .. code-block:: bash
 
     $ pip install misery
 
-If you're going to use **misery** with PostgreSQL, you also need to install
+If you're going to use **misery** with PostgreSQL, also install
 **aysncpg** and **PyPika**:
 
 .. code-block:: bash
@@ -25,8 +25,8 @@ If you're going to use **misery** with PostgreSQL, you also need to install
 Creating a repository
 ---------------------
 
-Let's imagine that in the business logic of your application
-you have an entity like this::
+Let's imagine that the business logic of your application
+has an entity like this::
 
     from dataclasses import dataclass
     from uuid import UUID
@@ -53,7 +53,7 @@ in your PostgreSQL database for this purpose::
     )
 
 
-When we have an entity and a table to store it in, we can define a repository::
+Now, when you have an entity and a table to store it in, define a repository::
 
     from pypika import Table
     from misery.postgres import PostgresRepo
@@ -61,19 +61,19 @@ When we have an entity and a table to store it in, we can define a repository::
     class UsersRepo(PostgresRepo[User]):
         table = Table("users")
 
-To use the repository we need to instantiate it::
+To use the repository, instantiate it::
 
     users_repo = UsersRepo(conn)
 
-Take a notice that we passed the connection to the database
-to the repository. The repository will use this connection for making
+Note that we passed the database connection
+to the repository. The repository will use this connection to make
 queries to the database. There is no need to create a new connection every time
-you want to create a repository because one connection can be shared by many repositories.
+you want to create a repository because several repositories can share one connection.
 
 Saving entities
 ---------------
 
-When the repository is ready, we can populate it with entities::
+When the repository is ready, you can populate it with entities::
 
     from uuid import uuid4
 
@@ -96,7 +96,7 @@ The simplest way to load an entity is to get it by ID::
     user = await users_repo.get(id=bob.id)
     assert user == bob
 
-Other attributes also can be used::
+Other attributes can also be used::
 
     user = await users_repo.get(name="Bob")
     assert user == bob
@@ -116,7 +116,7 @@ Descending ordering is also possible::
     users = await users_repo.get_many(order=["-name"])
     assert [u.name for u in users] == ["John", "Bob"]
 
-If you don't want to load an entire collection of entities
+If you don't want to load the entire collection of entities
 from your database, use different types of filters::
 
     from misery import F
@@ -127,7 +127,7 @@ from your database, use different types of filters::
     users = await users_repo.get_many([F.startswith("name", "B")])
     assert set(u.name for u in users) == {"Bob", "Bert"}
 
-To know more about filters read the API documentation.
+To know more about filters, read the API documentation.
 
 Removing entities
 -----------------
@@ -151,14 +151,14 @@ Just create it and use as a context manager::
         await users_repo.add(User(id=uuid4(), name="Mike"))
 
 The transaction above will be rolled back due to the uniqueness
-constrant on the "name" column.
+constraint on the "name" column.
 
 Repository customization
 ------------------------
 
-The default behaviour is not enough when things get more complex
-and some additional code has to be written. Look what
-may change in the case of one-to-many relationship::
+The default behaviour may not be enough when things get more complex.
+Some additional code has to be written. Look what
+may change if a one-to-many relationship comes up::
 
     from typing import List
 
@@ -266,11 +266,11 @@ may change in the case of one-to-many relationship::
 
 Fast prototyping
 ----------------
-Sometimes when you're making a prototype
-or writing tests of the business logic
+Sometimes, when you're making a prototype
+or writing tests for the business logic,
 the database schema may be unimportant at all.
-In this case instead of prematurely thinking
-about details of data storage
+In this case, instead of prematurely thinking
+about details of data storage,
 you can use a dictionary-based repository to store
 entities::
 
@@ -283,24 +283,23 @@ entities::
 
     users_repo = UsersRepo(data)
 
-In this example the "data" dictionary will be used
+In this example, the "data" dictionary is used
 instead of a database. The "key" attribute of a repository
-serves like a name of a table to keep entities
-of different types in separate collections inside this
+serves as a table name to keep entities
+of different types in separate collections inside the
 dictionary.
 
 The dictionary-based repository implements the same protocol
-as the PostgreSQL-based one, so it can be replacad by it
-whenever you're ready.
+as the PostgreSQL-based one, so they are interchangeable.
 
 
 Protocols
 ---------
 
-It's better to use protocols in annotations because
-it makes easier switching from one implementation to another.
-For the repository from the previous example
-we could define a protocol this way::
+It's better if you use protocols in annotations because
+it makes it easier to switch from one implementation to another.
+For the repository from the previous example,
+you can define a protocol like this::
 
     from misery import Repo
 

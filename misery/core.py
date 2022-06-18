@@ -40,7 +40,7 @@ class FilterType(Enum):
 
 
 class F:
-    """An object that is used for filtering of entities
+    """Object used for filtering entities
     before getting them from a repository."""
 
     def __init__(self, type: FilterType, field: str, value: Any) -> None:
@@ -53,197 +53,214 @@ class F:
 
     @classmethod
     def eq(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a value in a ``field`` that is
-        equal to a given one.
+        """Create a filter to find entities
+        with a specified field value.
         """
         return cls(FilterType.EQ, field, value)
 
     @classmethod
     def lt(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a value in a ``field`` that is
+        """Create a filter to find entities
+        with a field value that is
         less than a given one.
         """
         return cls(FilterType.LT, field, value)
 
     @classmethod
     def lte(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a value in a ``field`` that is
+        """Create a filter to find entities
+        with a field value that is
         less than or equal to a given one.
         """
         return cls(FilterType.LTE, field, value)
 
     @classmethod
     def gt(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a value in a ``field`` that is
+        """Create a filter to find entities
+        with a field value that is
         greater than a given one.
         """
         return cls(FilterType.GT, field, value)
 
     @classmethod
     def gte(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a value in a ``field`` that is
+        """Create a filter to find entities
+        with a field value that is
         greater than or equal to a given one.
         """
         return cls(FilterType.GTE, field, value)
 
     @classmethod
     def neq(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a value in a ``field`` that is
+        """Create a filter to find entities
+        with a field value that is
         not equal to a given one.
         """
         return cls(FilterType.NEQ, field, value)
 
     @classmethod
     def contains(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a ``field`` that contains a ``value``.
+        """Create a filter to find entities
+        whose field contains a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.CONTAINS, field, value)
 
     @classmethod
     def icontains(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that contains a ``value``.
+        """Create a filter to find entities
+        whose field contains a given value.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.ICONTAINS, field, value)
 
     @classmethod
     def ncontains(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't contain a ``value``.
+        """Create a filter to find entities
+        whose field doesn't contain a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.NCONTAINS, field, value)
 
     @classmethod
     def nicontains(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't contain a ``value``.
+        """Create a filter to find entities
+        whose field doesn't contain a given value.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.NICONTAINS, field, value)
 
     @classmethod
     def startswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that starts with a ``value``.
+        """Create a filter to find entities
+        whose field starts with a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.STARTSWITH, field, value)
 
     @classmethod
     def istartswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that starts with a ``value``.
+        """Create a filter to find entities
+        whose field starts with a given value.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.ISTARTSWITH, field, value)
 
     @classmethod
     def nstartswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't start with a ``value``.
+        """Create a filter to find entities
+        whose field doesn't start with a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.NSTARTSWITH, field, value)
 
     @classmethod
     def nistartswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't start with a ``value``.
+        """Create a filter to find entities
+        whose field doesn't start with a given value.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.NISTARTSWITH, field, value)
 
     @classmethod
     def endswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that ends with a ``value``.
+        """Create a filter to find entities
+        whose field ends with a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.ENDSWITH, field, value)
 
     @classmethod
     def nendswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't end with a ``value``.
+        """Create a filter to find entities
+        whose field doesn't end with a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.NENDSWITH, field, value)
 
     @classmethod
     def iendswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that ends with a ``value``.
+        """Create a filter to find entities
+        whose field value ends with a given value.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.IENDSWITH, field, value)
 
     @classmethod
     def niendswith(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't end with a ``value``.
+        """Create a filter to find entities
+        whose field value doesn't end with a given value.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.NIENDSWITH, field, value)
 
     @classmethod
     def matches(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that matches
-        a regular expression in a ``value``.
+        """Create a filter to find entities
+        whose field matches
+        a regular expression in the ``value`` parameter.
+
+        Case-sensitive.
         """
         return cls(FilterType.MATCHES, field, value)
 
     @classmethod
     def imatches(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that matches
-        a regular expression in a ``value``.
+        """Create a filter to find entities
+        whose field value matches
+        a regular expression in the ``value`` parameter.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.IMATCHES, field, value)
 
     @classmethod
     def nmatches(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't match
-        a regular expression in a ``value``.
+        """Create a filter to find entities
+        whose field value doesn't match
+        a regular expression in the ``value`` parameter.
+
+        Case-sensitive.
         """
         return cls(FilterType.NMATCHES, field, value)
 
     @classmethod
     def nimatches(cls, field: str, value: str) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't match
-        a regular expression in a ``value``.
+        """Create a filter to find entities
+        whose field value doesn't match
+        a regular expression in the ``value`` parameter.
 
-        Case-insensitive version.
+        Case-insensitive.
         """
         return cls(FilterType.NIMATCHES, field, value)
 
     @classmethod
     def in_(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a ``field`` that has a value
-        contained in a given one.
+        """Create a filter to find entities
+        whose field is within a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.IN, field, value)
 
     @classmethod
     def nin(cls, field: str, value: Any) -> F:
-        """Make a filter to find entities
-        with a ``field`` that doesn't have
-        a value contained in a given one.
+        """Create a filter to find entities
+        whose field is not within a given value.
+
+        Case-sensitive.
         """
         return cls(FilterType.NIN, field, value)
 
@@ -252,7 +269,7 @@ T = TypeVar("T")
 
 
 class Repo(Protocol[T]):
-    """The protocol that all repositories must implement."""
+    """Protocol for all repositories to implement."""
 
     async def add(self, entity: T) -> None:
         """Add a new entity to the repository.
@@ -263,7 +280,7 @@ class Repo(Protocol[T]):
         ...
 
     async def add_many(self, entities: Iterable[T]) -> None:
-        """Add many entities to the repository.
+        """Add multiple entities to the repository.
 
         :param entities: Entities to add.
         """
@@ -271,17 +288,17 @@ class Repo(Protocol[T]):
 
     async def get(self, **kwargs: Any) -> T:
         """Get an entity.
-        Raise a :exc:`misery.NotFound` if the entity is missing.
+        Raise :exc:`misery.NotFound` if the entity is missing.
 
-        :param kwargs: Lookup parameters in the form of field-value pairs.
+        :param kwargs: Lookup parameters as field-value pairs.
         """
         ...
 
     async def get_for_update(self, **kwargs: Any) -> T:
         """Get an entity and lock it for update.
-        Raise a :exc:`misery.NotFound` if the entity is missing.
+        Raise :exc:`misery.NotFound` if the entity is missing.
 
-        :param kwargs: Lookup parameters in the form of field-value pairs.
+        :param kwargs: Lookup parameters as field-value pairs.
         """
         ...
 
@@ -292,22 +309,21 @@ class Repo(Protocol[T]):
         limit: Optional[int] = None,
         page: int = 1,
     ) -> Iterable[T]:
-        """Get many entities.
+        """Get multiple entities.
 
-        :param filters: A sequence of filters.
-        :param order: A sequence of fields by which entities
-            must be ordered. If an item of the sequence
-            starts with the "-" character
-            then the descending ordering will be applied for this field.
-        :param limit: Maximum number of entities on the requested page.
-        :param page: A number of page to get when the ``limit`` parameter
+        :param filters: Sequence of filters.
+        :param order: Sequence of fields by which to sort entities.
+            If a field starts with the "-" character,
+            entities for the field will be shown in descending order.
+        :param limit: Maximum number of entities to show on the page.
+        :param page: Page number. Only when the ``limit`` parameter
             is used.
         """
         ...
 
     async def update(self, entity: T) -> None:
         """Save an updated entity.
-        Raise a :exc:`misery.NotFound` if the entity
+        Raise :exc:`misery.NotFound` if the entity
         is not present in the repository.
 
         :param entity: An updated entity.
@@ -315,43 +331,43 @@ class Repo(Protocol[T]):
         ...
 
     async def delete(self, **kwargs: Any) -> None:
-        """Delete entities. When ``kwargs`` are empty, delete
-        everything.
+        """Delete entities. When ``kwargs`` is empty, delete
+        all.
 
-        :param kwargs: Lookup parameters in the form of field-value pairs.
+        :param kwargs: Lookup parameters as field-value pairs.
         """
         ...
 
     async def exists(self, **kwargs: Any) -> bool:
-        """Check if there is an entity for the given lookup parameters.
+        """Check if there is an entity for given lookup parameters.
 
-        :param kwargs: Lookup parameters in the form of field-value pairs.
+        :param kwargs: Lookup parameters as field-value pairs.
         """
         ...
 
     async def count(self, **kwargs: Any) -> int:
-        """Count entities matching the given lookup parameters.
-        If there is no lookup parameters, count all entities in
+        """Count entities that match given lookup parameters.
+        If there are no lookup parameters, count all entities in
         the repository.
 
-        :param kwargs: Lookup parameters in the form of field-value pairs.
+        :param kwargs: Lookup parameters as field-value pairs.
         """
         ...
 
 
 class NotFound(Exception):
-    """An error to raise when an entity cannot be found
-    in a repository."""
+    """Error to raise when an entity cannot be found
+    in the repository."""
 
     pass
 
 
 class TransactionManager(Protocol):
-    """A protocol of an object which is used
-    for management of transactions."""
+    """Protocol of an object that is used
+    for transaction management."""
 
     async def __aenter__(self) -> None:
-        """Start a transaction."""
+        """Start a new transaction."""
         ...
 
     async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:

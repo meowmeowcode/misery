@@ -29,7 +29,7 @@ Run tests:
     poetry run docker-compose up -d
     poetry run py.test tests/
 
-Auto-format code:
+Autoformat code:
 
 .. code-block:: bash
 

@@ -10,11 +10,11 @@ Misery
 who wrote a lot of unmaintainable code trying to work with
 databases asynchronously.*
 
-In spite of its name, it may be a good choice because:
+In spite of its name, it may be a good choice for you because:
 
-- it is asynchronous from the beginning
+- it's asynchronous from the beginning
 - it can save you from writing significant amount of boilerplate code
-- it can help you to separate business logic from data storage details 
+- it can help you separate business logic from data storage details
 - it works well with MyPy
 - it doesn't use a lot of magic
 
