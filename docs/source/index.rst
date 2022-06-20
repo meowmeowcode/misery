@@ -6,7 +6,7 @@
 Misery
 ======
 
-*This library is dedicated to those python developers
+*This library is dedicated to those Python developers
 who wrote a lot of unmaintainable code trying to work with
 databases asynchronously.*
 
