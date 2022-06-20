@@ -8,3 +8,14 @@ services:
       POSTGRES_USER: misery
       POSTGRES_PASSWORD: misery
       POSTGRES_DB: misery
+  clickhouse:
+    image: "clickhouse/clickhouse-server:22.6.1-alpine"
+    ports:
+      - "8123:8123"
+    environment:
+      CLICKHOUSE_DB: misery
+      CLICKHOUSE_USER: misery
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+      CLICKHOUSE_PASSWORD: misery
+    volumes:
+      - ${PWD}/clickhouse.xml:/etc/clickhouse-server/users.xml

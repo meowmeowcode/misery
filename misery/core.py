@@ -362,6 +362,18 @@ class NotFound(Exception):
     pass
 
 
+class QueryError(Exception):
+    """Error to raise when a query connot be
+    processed."""
+
+    def __init__(self, message: str, query: str) -> None:
+        self.message = message
+        self.query = query
+
+    def __str__(self) -> str:
+        return f"QueryError(message='{self.message}', query='{self.query}')"
+
+
 class TransactionManager(Protocol):
     """Protocol of an object that is used
     for transaction management."""
