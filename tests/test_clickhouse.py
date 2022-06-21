@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import (
     Any,
     AsyncGenerator,
-    Generator,
     Sequence,
     Union,
 )
@@ -18,6 +17,7 @@ from aiohttp import (
 )
 
 from pypika import Table  # type: ignore
+from yarl import URL
 
 from misery import (
     F,
@@ -42,22 +42,15 @@ class SymptomsClickhouseRepo(ClickhouseRepo[Symptom]):
     table = Table("symptoms")
 
 
-@pytest.fixture(scope="session")
-def event_loop() -> Generator:
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 async def session() -> AsyncGenerator:
     async with ClientSession(
-        "http://localhost:8123", auth=BasicAuth("misery", "misery")
+        URL("http://misery:misery@localhost:8123?database=misery")
     ) as s:
         yield s
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 async def db_schema(session: ClientSession) -> AsyncGenerator:
     async with session.post(
         "/",

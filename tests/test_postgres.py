@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import (
     Any,
     AsyncGenerator,
-    Generator,
     Sequence,
     Union,
 )
@@ -41,24 +40,17 @@ class SymptomsPostgresRepo(PostgresRepo[Symptom]):
     table = Table("symptoms")
 
 
-@pytest.fixture(scope="session")
-def event_loop() -> Generator:
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def conn_str() -> str:
     return "postgresql://misery:misery@localhost/misery"
 
 
-@pytest.fixture(scope="session", params=[asyncpg.connect, asyncpg.create_pool])
+@pytest.fixture(scope="module", params=[asyncpg.connect, asyncpg.create_pool])
 async def conn(request: Any, conn_str: str) -> Union[Connection, Pool]:
     return await request.param(conn_str)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 async def db_schema(conn: Connection) -> AsyncGenerator:
     await conn.execute(
         """

@@ -232,9 +232,9 @@ class ClickhouseRepo(Generic[T]):
             elif f.type == FilterType.NMATCHES:
                 criterion = Not(Match(column, f.value))
             elif f.type == FilterType.IMATCHES:
-                criterion = Match(column, '(?i)' + f.value)
+                criterion = Match(column, "(?i)" + f.value)
             elif f.type == FilterType.NIMATCHES:
-                criterion = Not(Match(column, '(?i)' + f.value))
+                criterion = Not(Match(column, "(?i)" + f.value))
 
             query = query.where(criterion)
 
