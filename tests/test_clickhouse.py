@@ -27,8 +27,8 @@ from misery import (
 )
 
 from misery.clickhouse import (
-    ClickhouseRepo,
-    ClickhouseTransactionManager,
+    ClickHouseRepo,
+    ClickHouseTransactionManager,
 )
 
 from .base import (
@@ -38,7 +38,7 @@ from .base import (
 )
 
 
-class SymptomsClickhouseRepo(ClickhouseRepo[Symptom]):
+class SymptomsClickHouseRepo(ClickHouseRepo[Symptom]):
     table = Table("symptoms")
 
 
@@ -78,12 +78,12 @@ async def clean_db(db_schema: None, session: ClientSession) -> None:
 
 @pytest.fixture
 def symptoms_repo(session: ClientSession) -> SymptomsRepo:
-    return SymptomsClickhouseRepo(session)
+    return SymptomsClickHouseRepo(session)
 
 
 @pytest.fixture
 def transaction_manager() -> TransactionManager:
-    return ClickhouseTransactionManager()
+    return ClickHouseTransactionManager()
 
 
 async def test_add_many(symptoms_repo: SymptomsRepo) -> None:

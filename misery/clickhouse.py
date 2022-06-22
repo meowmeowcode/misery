@@ -33,7 +33,7 @@ from .core import (
 T = TypeVar("T")
 
 
-class ClickhouseRepo(Generic[T]):
+class ClickHouseRepo(Generic[T]):
     """Implementation of the :class:`misery.Repo` protocol
     that uses aiohttp to communicate with ClickHouse.
     """
@@ -49,6 +49,9 @@ class ClickhouseRepo(Generic[T]):
         """
 
     def __init__(self, session: ClientSession) -> None:
+        """:param session: Client session for
+        making HTTP requests to ClickHouse.
+        """
         self.session = session
 
     @property
@@ -241,6 +244,10 @@ class ClickhouseRepo(Generic[T]):
         return await self.fetch_many(query)
 
     async def update(self, entity: T) -> None:
+        """Don't use this method in production
+        because ClickHouse isn't good at updating records.
+        """
+
         old_entity = await self.get(**{self.id_field: getattr(entity, self.id_field)})
         old_record = self.dump(old_entity)
         record = self.dump(entity)
@@ -254,6 +261,10 @@ class ClickhouseRepo(Generic[T]):
         await self.request(query)
 
     async def delete(self, **kwargs: Any) -> None:
+        """Don't use this method in production
+        because ClickHouse isn't good at deleting records.
+        """
+
         query = ClickHouseQuery.from_(self.table).delete()
 
         if kwargs:
@@ -283,7 +294,11 @@ class ClickhouseRepo(Generic[T]):
         return int(data["data"][0]["count()"])
 
 
-class ClickhouseTransactionManager:
+class ClickHouseTransactionManager:
+    """This class exists only for compatibility with the protocol
+    because ClickHouse doesn't support transactions.
+    It doesn't do anything to the database."""
+
     async def __aenter__(self) -> None:
         pass
 

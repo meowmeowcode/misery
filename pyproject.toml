@@ -1,8 +1,9 @@
 [tool.poetry]
 name = "misery"
-version = "0.1.0"
-description = ""
+version = "0.2.0"
 authors = ["Anton Evdokimov <meowmeowcode@gmail.com>"]
+description = "asyncio-friendly database toolkit"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8"

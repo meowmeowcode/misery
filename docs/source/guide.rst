@@ -264,6 +264,43 @@ may change if a one-to-many relationship comes up::
     assert user.emails == bob.emails
 
 
+ClickHouse
+----------
+
+Install **pypika** and **aiohttp**, if you're going to use **misery**
+with ClickHouse::
+
+    pip install aiohttp pypika
+
+It will allow you to store entities in ClickHouse like this::
+
+    from dataclasses import dataclass
+    from aiohttp import ClientSession
+    from yarl import URL
+    from misery.clickhouse import ClickHouseRepo
+    from pypika import Table
+
+
+    @dataclass
+    class Event:
+        n: int
+
+    class EventsRepo(ClickHouseRepo[Event]):
+        table = Table("events")
+
+    session = ClientSession(URL("http://user:password@localhost:8123?database=example"))
+
+    await session.post(
+        "/",
+        data="CREATE TABLE events (n UInt64) ENGINE MergeTree() ORDER BY n",
+        raise_for_status=True
+    )
+
+    events_repo = EventsRepo(session)
+    event = Event(n=123)
+    await events_repo.add(event)
+
+
 Fast prototyping
 ----------------
 Sometimes, when you're making a prototype

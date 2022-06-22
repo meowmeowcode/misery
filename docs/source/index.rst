@@ -18,6 +18,8 @@ In spite of its name, it may be a good choice for you because:
 - it works well with MyPy
 - it doesn't use a lot of magic
 
+Supported database systems: PostgreSQL, ClickHouse.
+
 Contents
 --------
 

@@ -363,8 +363,8 @@ class NotFound(Exception):
 
 
 class QueryError(Exception):
-    """Error to raise when a query connot be
-    processed."""
+    """Error to raise when a query to the database
+    cannot be processed."""
 
     def __init__(self, message: str, query: str) -> None:
         self.message = message

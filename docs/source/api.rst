@@ -8,12 +8,15 @@ Classes
 
 * :class:`misery.F`
 * :exc:`misery.NotFound`
+* :exc:`misery.QueryError`
 * :class:`misery.Repo`
 * :class:`misery.TransactionManager`
 * :class:`misery.dictionary.DictRepo`
 * :class:`misery.dictionary.DictTransactionManager`
 * :class:`misery.postgres.PostgresRepo`
 * :class:`misery.postgres.PostgresTransactionManager`
+* :class:`misery.clickhouse.ClickHouseRepo`
+* :class:`misery.clickhouse.ClickHouseTransactionManager`
 
 Core
 ----
@@ -53,4 +56,16 @@ PostgreSQL
     :members:
 
 .. autoclass:: PostgresTransactionManager
+    :members:
+
+
+ClickHouse
+----------
+
+.. module:: misery.clickhouse
+
+.. autoclass:: ClickHouseRepo
+    :members:
+
+.. autoclass:: ClickHouseTransactionManager
     :members:
