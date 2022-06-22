@@ -8,4 +8,4 @@ build:
     post_install:
       - pip install poetry==1.1.13
       - poetry config virtualenvs.create false
-      - poetry install
+      - poetry install --extras "postgres clickhouse"

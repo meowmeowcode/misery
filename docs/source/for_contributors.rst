@@ -14,7 +14,7 @@ Install dependencies:
 
 .. code-block:: bash
 
-    poetry install
+    poetry install --extras "postgres clickhouse"
 
 Check code with MyPy:
 

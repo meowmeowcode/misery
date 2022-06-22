@@ -9,18 +9,12 @@ For examples on this page, we’re going to use PostgreSQL because historically 
 Installation
 ------------
 
-First, install **misery** itself:
+First, install **misery**:
 
 .. code-block:: bash
 
-    $ pip install misery
+    $ pip install misery[postgres]
 
-If you're going to use **misery** with PostgreSQL, also install
-**aysncpg** and **PyPika**:
-
-.. code-block:: bash
-
-    $ pip install asyncpg pypika
 
 Creating a repository
 ---------------------
@@ -267,10 +261,10 @@ may change if a one-to-many relationship comes up::
 ClickHouse
 ----------
 
-Install **pypika** and **aiohttp**, if you're going to use **misery**
-with ClickHouse::
+If you're going to use **misery**
+with ClickHouse, install it this way::
 
-    pip install aiohttp pypika
+    pip install misery[clickhouse]
 
 It will allow you to store entities in ClickHouse like this::
 
