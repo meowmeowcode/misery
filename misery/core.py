@@ -10,6 +10,8 @@ from typing import Optional
 from typing import Protocol
 from typing import Sequence
 from typing import TypeVar
+from typing import Union
+from typing import ForwardRef
 
 
 class FilterType(Enum):
@@ -321,6 +323,19 @@ class Repo(Protocol[T]):
         """
         ...
 
+    async def get_first(
+        self, filters: Sequence[F] = (), order: Sequence[str] = ()
+    ) -> T:
+        """Get the first entity matching given filters.
+        Raise :exc:`misery.NotFound` if the entity is missing.
+
+        :param filters: Sequence of filters.
+        :param order: Sequence of fields by which to sort entities.
+            If a field starts with the "-" character,
+            entities for the field will be shown in descending order.
+        """
+        ...
+
     async def update(self, entity: T) -> None:
         """Save an updated entity.
         Raise :exc:`misery.NotFound` if the entity
@@ -367,6 +382,9 @@ class QueryError(Exception):
     cannot be processed."""
 
     def __init__(self, message: str, query: str) -> None:
+        """:param message: Message from the database system.
+        :param query: Query that cannot be processed.
+        """
         self.message = message
         self.query = query
 

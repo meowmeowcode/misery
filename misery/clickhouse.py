@@ -243,6 +243,14 @@ class ClickHouseRepo(Generic[T]):
 
         return await self.fetch_many(query)
 
+    async def get_first(
+        self, filters: Sequence[F] = (), order: Sequence[str] = ()
+    ) -> T:
+        try:
+            return list(await self.get_many(filters, order=order, limit=1))[0]
+        except IndexError:
+            raise NotFound
+
     async def update(self, entity: T) -> None:
         """Don't use this method in production
         because ClickHouse isn't good at updating records.

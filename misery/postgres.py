@@ -158,6 +158,11 @@ class PostgresRepo(Generic[T]):
         await self.after_add(entity)
 
     async def after_add(self, entity: T) -> None:
+        """Action after adding a new entity.
+
+        By default, this method doesn't do anything.
+        Override it to your liking.
+        """
         pass
 
     async def add_many(self, entities: Iterable[T]) -> None:
@@ -273,6 +278,14 @@ class PostgresRepo(Generic[T]):
             query = query.where(criterion)
 
         return await self.fetch_many(query)
+
+    async def get_first(
+        self, filters: Sequence[F] = (), order: Sequence[str] = ()
+    ) -> T:
+        try:
+            return list(await self.get_many(filters, order=order, limit=1))[0]
+        except IndexError:
+            raise NotFound
 
     async def update(self, entity: T) -> None:
         query = PostgreSQLQuery.update(self.table)

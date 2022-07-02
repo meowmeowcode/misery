@@ -228,6 +228,32 @@ async def test_get_many_with_page_and_limit(
     assert [s.name for s in symptoms] == names
 
 
+@pytest.mark.parametrize(
+    "filters, order, name",
+    [
+        ([F.startswith("name", "I")], [], "Insomnia"),
+        ([F.nstartswith("name", "I")], [], "Helplessness"),
+        ([], ["-name"], "Insomnia"),
+        ([], ["name"], "Helplessness"),
+    ],
+)
+async def test_get_first(
+    filters: Sequence[F],
+    order: Sequence[str],
+    name: str,
+    symptoms_repo: SymptomsRepo,
+    helplessness: Symptom,
+    insomnia: Symptom,
+) -> None:
+    symptom = await symptoms_repo.get_first(filters, order)
+    assert symptom.name == name
+
+
+async def test_get_first_not_found(symptoms_repo: SymptomsRepo) -> None:
+    with pytest.raises(NotFound):
+        await symptoms_repo.get_first()
+
+
 async def test_delete(
     symptoms_repo: SymptomsRepo, hopelessness: Symptom, helplessness: Symptom
 ) -> None:

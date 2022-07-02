@@ -34,6 +34,9 @@ Core
 
 .. autoclass:: NotFound
 
+.. autoclass:: QueryError
+    :members:
+
 
 Dictionary
 ----------

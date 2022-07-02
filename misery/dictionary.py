@@ -147,6 +147,14 @@ class DictRepo(Generic[T]):
     def _get_field(self, obj: Any, field: str) -> Any:
         return reduce(lambda x, y: getattr(x, y), field.split("."), obj)
 
+    async def get_first(
+        self, filters: Sequence[F] = (), order: Sequence[str] = ()
+    ) -> T:
+        try:
+            return list(await self.get_many(filters, order=order, limit=1))[0]
+        except IndexError:
+            raise NotFound
+
     async def update(self, entity: T) -> None:
         id = getattr(entity, self.id_field)
         if id not in self.data:
