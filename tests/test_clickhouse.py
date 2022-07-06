@@ -163,6 +163,16 @@ async def test_get_many(
         ([F.lte("id", 2)], {"Hopelessness", "Helplessness"}),
         ([F.gt("id", 3)], {"Constipation"}),
         ([F.gte("id", 3)], {"Insomnia", "Constipation"}),
+        (
+            [
+                F.or_(
+                    F.or_(F.startswith("name", "I"), F.endswith("name", "n")),
+                    F.eq("name", "Helplessness"),
+                )
+            ],
+            {"Constipation", "Insomnia", "Helplessness"},
+        ),
+        ([F.and_(F.contains("name", "o"), F.contains("name", "ss"))], {"Hopelessness"}),
     ],
 )
 async def test_get_many_with_filter(

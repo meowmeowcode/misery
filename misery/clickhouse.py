@@ -13,6 +13,7 @@ from typing import (
 from aiohttp import ClientSession
 from pypika import (  # type: ignore
     ClickHouseQuery,
+    Criterion,
     Not,
     Order,
     Parameter,
@@ -188,60 +189,67 @@ class ClickHouseRepo(Generic[T]):
                 query = query.orderby(field)
 
         for f in filters:
-            column = self.table[f.field]
-
-            if f.type == FilterType.EQ:
-                criterion = column == f.value
-            elif f.type == FilterType.NEQ:
-                criterion = column != f.value
-            elif f.type == FilterType.LT:
-                criterion = column < f.value
-            elif f.type == FilterType.GT:
-                criterion = column > f.value
-            elif f.type == FilterType.LTE:
-                criterion = column <= f.value
-            elif f.type == FilterType.GTE:
-                criterion = column >= f.value
-            elif f.type == FilterType.STARTSWITH:
-                criterion = column.like(f"{f.value}%")
-            elif f.type == FilterType.NSTARTSWITH:
-                criterion = column.not_like(f"{f.value}%")
-            elif f.type == FilterType.ENDSWITH:
-                criterion = column.like(f"%{f.value}")
-            elif f.type == FilterType.NENDSWITH:
-                criterion = column.not_like(f"%{f.value}")
-            elif f.type == FilterType.ISTARTSWITH:
-                criterion = column.ilike(f"{f.value}%")
-            elif f.type == FilterType.NISTARTSWITH:
-                criterion = column.not_ilike(f"{f.value}%")
-            elif f.type == FilterType.IENDSWITH:
-                criterion = column.ilike(f"%{f.value}")
-            elif f.type == FilterType.NIENDSWITH:
-                criterion = column.not_ilike(f"%{f.value}")
-            elif f.type == FilterType.CONTAINS:
-                criterion = column.like(f"%{f.value}%")
-            elif f.type == FilterType.NCONTAINS:
-                criterion = column.not_like(f"%{f.value}%")
-            elif f.type == FilterType.ICONTAINS:
-                criterion = column.ilike(f"%{f.value}%")
-            elif f.type == FilterType.NICONTAINS:
-                criterion = column.not_ilike(f"%{f.value}%")
-            elif f.type == FilterType.IN:
-                criterion = column.isin(f.value)
-            elif f.type == FilterType.NIN:
-                criterion = column.notin(f.value)
-            elif f.type == FilterType.MATCHES:
-                criterion = Match(column, f.value)
-            elif f.type == FilterType.NMATCHES:
-                criterion = Not(Match(column, f.value))
-            elif f.type == FilterType.IMATCHES:
-                criterion = Match(column, "(?i)" + f.value)
-            elif f.type == FilterType.NIMATCHES:
-                criterion = Not(Match(column, "(?i)" + f.value))
-
+            criterion = self._filter_to_criterion(f)
             query = query.where(criterion)
 
         return await self.fetch_many(query)
+
+    def _filter_to_criterion(self, f: F) -> Criterion:
+        if f.type == FilterType.OR:
+            return Criterion.any([self._filter_to_criterion(ff) for ff in f.value])
+        elif f.type == FilterType.AND:
+            return Criterion.all([self._filter_to_criterion(ff) for ff in f.value])
+
+        column = self.table[f.field]
+
+        if f.type == FilterType.EQ:
+            return column == f.value
+        elif f.type == FilterType.NEQ:
+            return column != f.value
+        elif f.type == FilterType.LT:
+            return column < f.value
+        elif f.type == FilterType.GT:
+            return column > f.value
+        elif f.type == FilterType.LTE:
+            return column <= f.value
+        elif f.type == FilterType.GTE:
+            return column >= f.value
+        elif f.type == FilterType.STARTSWITH:
+            return column.like(f"{f.value}%")
+        elif f.type == FilterType.NSTARTSWITH:
+            return column.not_like(f"{f.value}%")
+        elif f.type == FilterType.ENDSWITH:
+            return column.like(f"%{f.value}")
+        elif f.type == FilterType.NENDSWITH:
+            return column.not_like(f"%{f.value}")
+        elif f.type == FilterType.ISTARTSWITH:
+            return column.ilike(f"{f.value}%")
+        elif f.type == FilterType.NISTARTSWITH:
+            return column.not_ilike(f"{f.value}%")
+        elif f.type == FilterType.IENDSWITH:
+            return column.ilike(f"%{f.value}")
+        elif f.type == FilterType.NIENDSWITH:
+            return column.not_ilike(f"%{f.value}")
+        elif f.type == FilterType.CONTAINS:
+            return column.like(f"%{f.value}%")
+        elif f.type == FilterType.NCONTAINS:
+            return column.not_like(f"%{f.value}%")
+        elif f.type == FilterType.ICONTAINS:
+            return column.ilike(f"%{f.value}%")
+        elif f.type == FilterType.NICONTAINS:
+            return column.not_ilike(f"%{f.value}%")
+        elif f.type == FilterType.IN:
+            return column.isin(f.value)
+        elif f.type == FilterType.NIN:
+            return column.notin(f.value)
+        elif f.type == FilterType.MATCHES:
+            return Match(column, f.value)
+        elif f.type == FilterType.NMATCHES:
+            return Not(Match(column, f.value))
+        elif f.type == FilterType.IMATCHES:
+            return Match(column, "(?i)" + f.value)
+        elif f.type == FilterType.NIMATCHES:
+            return Not(Match(column, "(?i)" + f.value))
 
     async def get_first(
         self, filters: Sequence[F] = (), order: Sequence[str] = ()

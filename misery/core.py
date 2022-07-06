@@ -39,6 +39,8 @@ class FilterType(Enum):
     NIMATCHES = enum.auto()
     IN = enum.auto()
     NIN = enum.auto()
+    OR = enum.auto()
+    AND = enum.auto()
 
 
 class F:
@@ -265,6 +267,20 @@ class F:
         Case-sensitive.
         """
         return cls(FilterType.NIN, field, value)
+
+    @classmethod
+    def or_(cls, *filters: F) -> F:
+        """Create a filter that combines multiple
+        filters with the "OR" operator.
+        """
+        return cls(FilterType.OR, "", filters)
+
+    @classmethod
+    def and_(cls, *filters: F) -> F:
+        """Create a filter that combines multiple
+        filters with the "AND" operator.
+        """
+        return cls(FilterType.AND, "", filters)
 
 
 T = TypeVar("T")

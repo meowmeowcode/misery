@@ -93,11 +93,7 @@ class DictRepo(Generic[T]):
         limit: Optional[int] = None,
         page: int = 1,
     ) -> Iterable[T]:
-        result = list(self.data.values())
-
-        for f in filters:
-            op = self._filter_to_op(f)
-            result = [x for x in result if op(self._get_field(x, f.field), f.value)]
+        result = self._apply_filters(self.data.values(), filters)
 
         def sorting_key(x: Any) -> tuple:
             return tuple(
@@ -146,6 +142,23 @@ class DictRepo(Generic[T]):
 
     def _get_field(self, obj: Any, field: str) -> Any:
         return reduce(lambda x, y: getattr(x, y), field.split("."), obj)
+
+    def _apply_filters(self, entities: Iterable[T], filters: Sequence[F]) -> list[T]:
+        result = list(entities)
+
+        for f in filters:
+            result = [x for x in result if self._check(f, x)]
+
+        return result
+
+    def _check(self, filter_: F, entity: T) -> bool:
+        if filter_.type == FilterType.OR:
+            return any(self._check(ff, entity) for ff in filter_.value)
+        elif filter_.type == FilterType.AND:
+            return all(self._check(ff, entity) for ff in filter_.value)
+        else:
+            op = self._filter_to_op(filter_)
+            return op(self._get_field(entity, filter_.field), filter_.value)
 
     async def get_first(
         self, filters: Sequence[F] = (), order: Sequence[str] = ()

@@ -112,58 +112,68 @@ async def test_get_many(
 @pytest.mark.parametrize(
     "filters, names",
     [
-        ([F.eq("name", "Insomnia")], ["Insomnia"]),
-        ([F.neq("name", "Insomnia")], ["Hopelessness", "Helplessness", "Constipation"]),
-        ([F.contains("name", "les")], ["Hopelessness", "Helplessness"]),
-        ([F.contains("name", "LES")], []),
-        ([F.ncontains("name", "les")], ["Insomnia", "Constipation"]),
+        ([F.eq("name", "Insomnia")], {"Insomnia"}),
+        ([F.neq("name", "Insomnia")], {"Hopelessness", "Helplessness", "Constipation"}),
+        ([F.contains("name", "les")], {"Hopelessness", "Helplessness"}),
+        ([F.contains("name", "LES")], set()),
+        ([F.ncontains("name", "les")], {"Insomnia", "Constipation"}),
         (
             [F.ncontains("name", "LES")],
-            ["Hopelessness", "Helplessness", "Insomnia", "Constipation"],
+            {"Hopelessness", "Helplessness", "Insomnia", "Constipation"},
         ),
-        ([F.icontains("name", "LES")], ["Hopelessness", "Helplessness"]),
-        ([F.nicontains("name", "LES")], ["Insomnia", "Constipation"]),
-        ([F.startswith("name", "H")], ["Hopelessness", "Helplessness"]),
-        ([F.startswith("name", "h")], []),
-        ([F.nstartswith("name", "H")], ["Insomnia", "Constipation"]),
+        ([F.icontains("name", "LES")], {"Hopelessness", "Helplessness"}),
+        ([F.nicontains("name", "LES")], {"Insomnia", "Constipation"}),
+        ([F.startswith("name", "H")], {"Hopelessness", "Helplessness"}),
+        ([F.startswith("name", "h")], set()),
+        ([F.nstartswith("name", "H")], {"Insomnia", "Constipation"}),
         (
             [F.nstartswith("name", "h")],
-            ["Hopelessness", "Helplessness", "Insomnia", "Constipation"],
+            {"Hopelessness", "Helplessness", "Insomnia", "Constipation"},
         ),
-        ([F.istartswith("name", "h")], ["Hopelessness", "Helplessness"]),
-        ([F.nistartswith("name", "h")], ["Insomnia", "Constipation"]),
-        ([F.endswith("name", "ness")], ["Hopelessness", "Helplessness"]),
-        ([F.endswith("name", "NESS")], []),
-        ([F.nendswith("name", "ness")], ["Insomnia", "Constipation"]),
+        ([F.istartswith("name", "h")], {"Hopelessness", "Helplessness"}),
+        ([F.nistartswith("name", "h")], {"Insomnia", "Constipation"}),
+        ([F.endswith("name", "ness")], {"Hopelessness", "Helplessness"}),
+        ([F.endswith("name", "NESS")], set()),
+        ([F.nendswith("name", "ness")], {"Insomnia", "Constipation"}),
         (
             [F.nendswith("name", "NESS")],
-            ["Hopelessness", "Helplessness", "Insomnia", "Constipation"],
+            {"Hopelessness", "Helplessness", "Insomnia", "Constipation"},
         ),
-        ([F.iendswith("name", "NESS")], ["Hopelessness", "Helplessness"]),
-        ([F.niendswith("name", "NESS")], ["Insomnia", "Constipation"]),
-        ([F.matches("name", r"^H.*s$")], ["Hopelessness", "Helplessness"]),
-        ([F.matches("name", r"^h.*s$")], []),
-        ([F.nmatches("name", r"^H.*s$")], ["Insomnia", "Constipation"]),
+        ([F.iendswith("name", "NESS")], {"Hopelessness", "Helplessness"}),
+        ([F.niendswith("name", "NESS")], {"Insomnia", "Constipation"}),
+        ([F.matches("name", r"^H.*s$")], {"Hopelessness", "Helplessness"}),
+        ([F.matches("name", r"^h.*s$")], set()),
+        ([F.nmatches("name", r"^H.*s$")], {"Insomnia", "Constipation"}),
         (
             [F.nmatches("name", r"^h.*s$")],
-            ["Hopelessness", "Helplessness", "Insomnia", "Constipation"],
+            {"Hopelessness", "Helplessness", "Insomnia", "Constipation"},
         ),
-        ([F.imatches("name", r"^h.*s$")], ["Hopelessness", "Helplessness"]),
-        ([F.nimatches("name", r"^h.*s$")], ["Insomnia", "Constipation"]),
-        ([F.in_("name", ("Insomnia", "Constipation"))], ["Insomnia", "Constipation"]),
+        ([F.imatches("name", r"^h.*s$")], {"Hopelessness", "Helplessness"}),
+        ([F.nimatches("name", r"^h.*s$")], {"Insomnia", "Constipation"}),
+        ([F.in_("name", ("Insomnia", "Constipation"))], {"Insomnia", "Constipation"}),
         (
             [F.nin("name", ("Insomnia", "Constipation"))],
-            ["Hopelessness", "Helplessness"],
+            {"Hopelessness", "Helplessness"},
         ),
-        ([F.lt("id", 2)], ["Hopelessness"]),
-        ([F.lte("id", 2)], ["Hopelessness", "Helplessness"]),
-        ([F.gt("id", 3)], ["Constipation"]),
-        ([F.gte("id", 3)], ["Insomnia", "Constipation"]),
+        ([F.lt("id", 2)], {"Hopelessness"}),
+        ([F.lte("id", 2)], {"Hopelessness", "Helplessness"}),
+        ([F.gt("id", 3)], {"Constipation"}),
+        ([F.gte("id", 3)], {"Insomnia", "Constipation"}),
+        (
+            [
+                F.or_(
+                    F.or_(F.startswith("name", "I"), F.endswith("name", "n")),
+                    F.eq("name", "Helplessness"),
+                )
+            ],
+            {"Constipation", "Insomnia", "Helplessness"},
+        ),
+        ([F.and_(F.contains("name", "o"), F.contains("name", "ss"))], {"Hopelessness"}),
     ],
 )
 async def test_get_many_with_filter(
     filters: Sequence[F],
-    names: list[str],
+    names: set[str],
     symptoms_repo: SymptomsRepo,
     hopelessness: Symptom,
     helplessness: Symptom,
@@ -171,7 +181,7 @@ async def test_get_many_with_filter(
     constipation: Symptom,
 ) -> None:
     symptoms = await symptoms_repo.get_many(filters)
-    assert [s.name for s in symptoms] == names
+    assert {s.name for s in symptoms} == names
 
 
 @pytest.mark.parametrize(
