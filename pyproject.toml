@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "misery"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Anton Evdokimov <meowmeowcode@gmail.com>"]
 description = "asyncio-friendly database toolkit"
 readme = "README.md"
