@@ -21,6 +21,8 @@ from asyncpg import (  # type: ignore
 )
 from pypika import (  # type: ignore
     Criterion,
+    CustomFunction,
+    Not,
     Order,
     Parameter,
     PostgreSQLQuery,
@@ -46,6 +48,7 @@ class _PostgreSQLMatching(Comparator):
     not_regexp = " !~ "
     iregexp = " ~* "
     not_iregexp = " !~* "
+    inet_in = " << "
 
 
 class _Regexp(BasicCriterion):
@@ -67,6 +70,17 @@ class _NotIRegexp(BasicCriterion):
     def __init__(self, term: Term, expr: str) -> None:
         super().__init__(
             _PostgreSQLMatching.not_iregexp, term, term.wrap_constant(expr)
+        )
+
+
+class _InetIn(BasicCriterion):
+    inet = CustomFunction("inet", ["value"])
+
+    def __init__(self, term: Term, expr: str) -> None:
+        super().__init__(
+            _PostgreSQLMatching.inet_in,
+            self.inet(term),
+            term.wrap_constant(self.inet(expr)),
         )
 
 
@@ -286,6 +300,10 @@ class PostgresRepo(Generic[T]):
             return _IRegexp(column, f.value)
         elif f.type == FilterType.NIMATCHES:
             return _NotIRegexp(column, f.value)
+        elif f.type == FilterType.IPIN:
+            return _InetIn(column, f.value)
+        elif f.type == FilterType.NIPIN:
+            return Not(_InetIn(column, f.value))
 
     async def get_first(
         self, filters: Sequence[F] = (), order: Sequence[str] = ()

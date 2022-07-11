@@ -14,6 +14,8 @@ from typing import Optional
 from typing import Sequence
 from typing import TypeVar
 
+import ipaddress
+
 from .core import F, FilterType
 from .core import NotFound
 
@@ -135,6 +137,10 @@ class DictRepo(Generic[T]):
         FilterType.NMATCHES: lambda s, v: not re.match(v, s),
         FilterType.IMATCHES: lambda s, v: bool(re.match(v, s, re.IGNORECASE)),
         FilterType.NIMATCHES: lambda s, v: not re.match(v, s, re.IGNORECASE),
+        FilterType.IPIN: lambda s, v: ipaddress.ip_address(s)
+        in ipaddress.ip_network(v),
+        FilterType.NIPIN: lambda s, v: ipaddress.ip_address(s)
+        not in ipaddress.ip_network(v),
     }
 
     def _filter_to_op(self, f: F) -> Callable:

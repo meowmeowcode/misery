@@ -39,6 +39,8 @@ class FilterType(Enum):
     NIMATCHES = enum.auto()
     IN = enum.auto()
     NIN = enum.auto()
+    IPIN = enum.auto()
+    NIPIN = enum.auto()
     OR = enum.auto()
     AND = enum.auto()
 
@@ -267,6 +269,22 @@ class F:
         Case-sensitive.
         """
         return cls(FilterType.NIN, field, value)
+
+    @classmethod
+    def ipin(cls, field: str, subnet: str) -> F:
+        """Create a filter to find entities
+        whose field is an IP address contained within
+        a given subnet.
+        """
+        return cls(FilterType.IPIN, field, value)
+
+    @classmethod
+    def nipin(cls, field: str, subnet: str) -> F:
+        """Create a filter to find entities
+        whose field is an IP address not contained within
+        a given subnet.
+        """
+        return cls(FilterType.NIPIN, field, value)
 
     @classmethod
     def or_(cls, *filters: F) -> F:

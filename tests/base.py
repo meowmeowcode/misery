@@ -26,3 +26,12 @@ class Symptom:
 
 
 SymptomsRepo = Repo[Symptom]
+
+
+@dataclass
+class Website:
+    id: int
+    address: str
+
+
+WebsitesRepo = Repo[Website]

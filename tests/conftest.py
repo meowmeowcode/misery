@@ -7,6 +7,8 @@ from .base import (
     Symptom,
     SymptomType,
     SymptomsRepo,
+    Website,
+    WebsitesRepo,
 )
 
 
@@ -43,3 +45,17 @@ async def insomnia(symptoms_repo: SymptomsRepo) -> Symptom:
     s = Symptom(id=3, name="Insomnia", type=SymptomType.PHYSICAL)
     await symptoms_repo.add(s)
     return s
+
+
+@pytest.fixture
+async def website(websites_repo: WebsitesRepo) -> Website:
+    w = Website(id=1, address="192.168.1.5")
+    await websites_repo.add(w)
+    return w
+
+
+@pytest.fixture
+async def website2(websites_repo: WebsitesRepo) -> Website:
+    w = Website(id=2, address="192.168.2.5")
+    await websites_repo.add(w)
+    return w

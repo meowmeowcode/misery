@@ -14,6 +14,7 @@ from aiohttp import ClientSession
 from pypika import (  # type: ignore
     ClickHouseQuery,
     Criterion,
+    CustomFunction,
     Not,
     Order,
     Parameter,
@@ -32,6 +33,8 @@ from .core import (
 
 
 T = TypeVar("T")
+
+_is_ip_address_in_range = CustomFunction("isIPAddressInRange", ["address", "prefix"])
 
 
 class ClickHouseRepo(Generic[T]):
@@ -250,6 +253,10 @@ class ClickHouseRepo(Generic[T]):
             return Match(column, "(?i)" + f.value)
         elif f.type == FilterType.NIMATCHES:
             return Not(Match(column, "(?i)" + f.value))
+        elif f.type == FilterType.IPIN:
+            return _is_ip_address_in_range(column, f.value)
+        elif f.type == FilterType.NIPIN:
+            return Not(_is_ip_address_in_range(column, f.value))
 
     async def get_first(
         self, filters: Sequence[F] = (), order: Sequence[str] = ()

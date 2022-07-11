@@ -369,6 +369,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "ipaddress"
+version = "1.0.23"
+description = "IPv4/IPv6 manipulation library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "ipython"
 version = "8.4.0"
 description = "IPython: Productive Interactive Computing"
@@ -1020,7 +1028,7 @@ postgres = ["PyPika", "asyncpg"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8"
-content-hash = "8b01555310d519baa057992a8654ca4c8943519e7d505e2203bc6096fa802271"
+content-hash = "6865db783e7ee6f0084da4d54d76c8cd13dfb89b79ed706ea7d3d6ae4e373e20"
 
 [metadata.files]
 aiohttp = [
@@ -1398,6 +1406,7 @@ iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
+ipaddress = []
 ipython = [
     {file = "ipython-8.4.0-py3-none-any.whl", hash = "sha256:7ca74052a38fa25fe9bedf52da0be7d3fdd2fb027c3b778ea78dfe8c212937d1"},
     {file = "ipython-8.4.0.tar.gz", hash = "sha256:f2db3a10254241d9b447232cec8b424847f338d9d36f9a577a6192c332a46abd"},

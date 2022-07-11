@@ -33,11 +33,17 @@ from .base import (
     Symptom,
     SymptomType,
     SymptomsRepo,
+    Website,
+    WebsitesRepo,
 )
 
 
 class SymptomsPostgresRepo(PostgresRepo[Symptom]):
     table = Table("symptoms")
+
+
+class WebsitesPostgresRepo(PostgresRepo[Website]):
+    table = Table("websites")
 
 
 @pytest.fixture(scope="module")
@@ -62,19 +68,35 @@ async def db_schema(conn: Connection) -> AsyncGenerator:
     """
     )
 
+    await conn.execute(
+        """
+            CREATE TABLE websites (
+                id integer PRIMARY KEY,
+                address text NOT NULL UNIQUE
+            )
+        """
+    )
+
     yield
 
     await conn.execute(f"drop table symptoms")
+    await conn.execute(f"drop table websites")
 
 
 @pytest.fixture(autouse=True)
 async def clean_db(db_schema: None, conn: Connection) -> None:
     await conn.execute(f"TRUNCATE TABLE symptoms")
+    await conn.execute(f"TRUNCATE TABLE websites")
 
 
 @pytest.fixture
 def symptoms_repo(conn: Connection) -> SymptomsRepo:
     return SymptomsPostgresRepo(conn)
+
+
+@pytest.fixture
+def websites_repo(conn: Connection) -> WebsitesRepo:
+    return WebsitesPostgresRepo(conn)
 
 
 @pytest.fixture
@@ -350,3 +372,21 @@ async def test_failed_transaction(
         pass
 
     assert await symptoms_repo.exists(id=hopelessness.id) is True
+
+
+@pytest.mark.parametrize(
+    "filter_, id_",
+    [
+        (F.ipin("address", "192.168.1.0/24"), 1),
+        (F.nipin("address", "192.168.1.0/24"), 2),
+    ],
+)
+async def test_network_filter(
+    filter_: F,
+    id_: int,
+    website: Website,
+    website2: Website,
+    websites_repo: WebsitesRepo,
+) -> None:
+    websites = list(await websites_repo.get_many([filter_]))
+    assert [w.id for w in websites] == [id_]

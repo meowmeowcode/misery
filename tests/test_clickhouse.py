@@ -35,11 +35,17 @@ from .base import (
     Symptom,
     SymptomType,
     SymptomsRepo,
+    Website,
+    WebsitesRepo,
 )
 
 
 class SymptomsClickHouseRepo(ClickHouseRepo[Symptom]):
     table = Table("symptoms")
+
+
+class WebsitesClickHouseRepo(ClickHouseRepo[Website]):
+    table = Table("websites")
 
 
 @pytest.fixture(scope="module")
@@ -65,20 +71,41 @@ async def db_schema(session: ClientSession) -> AsyncGenerator:
     ) as resp:
         assert await resp.read() == b""
 
+    async with session.post(
+        "/",
+        data="""
+            CREATE TABLE websites (
+                id UInt32 NOT NULL,
+                address String NOT NULL
+            )
+            ENGINE = MergeTree() ORDER BY id
+        """,
+    ) as resp:
+        assert await resp.read() == b""
+
     yield
 
     async with session.post("/", data="DROP TABLE symptoms") as resp:
+        assert await resp.read() == b""
+
+    async with session.post("/", data="DROP TABLE websites") as resp:
         assert await resp.read() == b""
 
 
 @pytest.fixture(autouse=True)
 async def clean_db(db_schema: None, session: ClientSession) -> None:
     await session.post("/", data="TRUNCATE TABLE symptoms")
+    await session.post("/", data="TRUNCATE TABLE websites")
 
 
 @pytest.fixture
 def symptoms_repo(session: ClientSession) -> SymptomsRepo:
     return SymptomsClickHouseRepo(session)
+
+
+@pytest.fixture
+def websites_repo(session: ClientSession) -> WebsitesRepo:
+    return WebsitesClickHouseRepo(session)
 
 
 @pytest.fixture
@@ -339,3 +366,21 @@ async def test_transaction(
         await symptoms_repo.delete(id=hopelessness.id)
 
     assert await symptoms_repo.exists(id=hopelessness.id) is False
+
+
+@pytest.mark.parametrize(
+    "filter_, id_",
+    [
+        (F.ipin("address", "192.168.1.0/24"), 1),
+        (F.nipin("address", "192.168.1.0/24"), 2),
+    ],
+)
+async def test_network_filter(
+    filter_: F,
+    id_: int,
+    website: Website,
+    website2: Website,
+    websites_repo: WebsitesRepo,
+) -> None:
+    websites = list(await websites_repo.get_many([filter_]))
+    assert [w.id for w in websites] == [id_]
