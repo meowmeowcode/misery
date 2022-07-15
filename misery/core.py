@@ -276,7 +276,7 @@ class F:
         whose field is an IP address contained within
         a given subnet.
         """
-        return cls(FilterType.IPIN, field, value)
+        return cls(FilterType.IPIN, field, subnet)
 
     @classmethod
     def nipin(cls, field: str, subnet: str) -> F:
@@ -284,7 +284,7 @@ class F:
         whose field is an IP address not contained within
         a given subnet.
         """
-        return cls(FilterType.NIPIN, field, value)
+        return cls(FilterType.NIPIN, field, subnet)
 
     @classmethod
     def or_(cls, *filters: F) -> F:
