@@ -139,7 +139,15 @@ async def test_get_many(
             ],
             {"Constipation", "Insomnia", "Helplessness"},
         ),
+        (
+            [
+                (F.startswith("name", "I") | F.endswith("name", "n"))
+                | F.eq("name", "Helplessness")
+            ],
+            {"Constipation", "Insomnia", "Helplessness"},
+        ),
         ([F.and_(F.contains("name", "o"), F.contains("name", "ss"))], {"Hopelessness"}),
+        ([F.contains("name", "o") & F.contains("name", "ss")], {"Hopelessness"}),
     ],
 )
 async def test_get_many_with_filter(

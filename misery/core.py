@@ -300,6 +300,12 @@ class F:
         """
         return cls(FilterType.AND, "", filters)
 
+    def __or__(self, other: F) -> F:
+        return F.or_(self, other)
+
+    def __and__(self, other: F) -> F:
+        return F.and_(self, other)
+
 
 T = TypeVar("T")
 
