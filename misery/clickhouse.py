@@ -204,59 +204,65 @@ class ClickHouseRepo(Generic[T]):
             return Criterion.all([self._filter_to_criterion(ff) for ff in f.value])
 
         column = self.table[f.field]
+        criterion: Any = None
 
         if f.type == FilterType.EQ:
-            return column == f.value
+            criterion = column == f.value
         elif f.type == FilterType.NEQ:
-            return column != f.value
+            criterion = column != f.value
         elif f.type == FilterType.LT:
-            return column < f.value
+            criterion = column < f.value
         elif f.type == FilterType.GT:
-            return column > f.value
+            criterion = column > f.value
         elif f.type == FilterType.LTE:
-            return column <= f.value
+            criterion = column <= f.value
         elif f.type == FilterType.GTE:
-            return column >= f.value
+            criterion = column >= f.value
         elif f.type == FilterType.STARTSWITH:
-            return column.like(f"{f.value}%")
+            criterion = column.like(f"{f.value}%")
         elif f.type == FilterType.NSTARTSWITH:
-            return column.not_like(f"{f.value}%")
+            criterion = column.not_like(f"{f.value}%")
         elif f.type == FilterType.ENDSWITH:
-            return column.like(f"%{f.value}")
+            criterion = column.like(f"%{f.value}")
         elif f.type == FilterType.NENDSWITH:
-            return column.not_like(f"%{f.value}")
+            criterion = column.not_like(f"%{f.value}")
         elif f.type == FilterType.ISTARTSWITH:
-            return column.ilike(f"{f.value}%")
+            criterion = column.ilike(f"{f.value}%")
         elif f.type == FilterType.NISTARTSWITH:
-            return column.not_ilike(f"{f.value}%")
+            criterion = column.not_ilike(f"{f.value}%")
         elif f.type == FilterType.IENDSWITH:
-            return column.ilike(f"%{f.value}")
+            criterion = column.ilike(f"%{f.value}")
         elif f.type == FilterType.NIENDSWITH:
-            return column.not_ilike(f"%{f.value}")
+            criterion = column.not_ilike(f"%{f.value}")
         elif f.type == FilterType.CONTAINS:
-            return column.like(f"%{f.value}%")
+            criterion = column.like(f"%{f.value}%")
         elif f.type == FilterType.NCONTAINS:
-            return column.not_like(f"%{f.value}%")
+            criterion = column.not_like(f"%{f.value}%")
         elif f.type == FilterType.ICONTAINS:
-            return column.ilike(f"%{f.value}%")
+            criterion = column.ilike(f"%{f.value}%")
         elif f.type == FilterType.NICONTAINS:
-            return column.not_ilike(f"%{f.value}%")
+            criterion = column.not_ilike(f"%{f.value}%")
         elif f.type == FilterType.IN:
-            return column.isin(f.value)
+            criterion = column.isin(f.value)
         elif f.type == FilterType.NIN:
-            return column.notin(f.value)
+            criterion = column.notin(f.value)
         elif f.type == FilterType.MATCHES:
-            return Match(column, f.value)
+            criterion = Match(column, f.value)
         elif f.type == FilterType.NMATCHES:
-            return Not(Match(column, f.value))
+            criterion = Not(Match(column, f.value))
         elif f.type == FilterType.IMATCHES:
-            return Match(column, "(?i)" + f.value)
+            criterion = Match(column, "(?i)" + f.value)
         elif f.type == FilterType.NIMATCHES:
-            return Not(Match(column, "(?i)" + f.value))
+            criterion = Not(Match(column, "(?i)" + f.value))
         elif f.type == FilterType.IPIN:
-            return _is_ip_address_in_range(column, f.value)
+            criterion = _is_ip_address_in_range(column, f.value)
         elif f.type == FilterType.NIPIN:
-            return Not(_is_ip_address_in_range(column, f.value))
+            criterion = Not(_is_ip_address_in_range(column, f.value))
+
+        if f.not_:
+            return Not(criterion)
+
+        return criterion
 
     async def get_first(
         self, filters: Sequence[F] = (), order: Sequence[str] = ()

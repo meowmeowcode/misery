@@ -144,7 +144,10 @@ class DictRepo(Generic[T]):
     }
 
     def _filter_to_op(self, f: F) -> Callable:
-        return self._FILTERS_MAP[f.type]
+        op = self._FILTERS_MAP[f.type]
+        if f.not_:
+            return lambda s, v: not op(s, v)
+        return op
 
     def _get_field(self, obj: Any, field: str) -> Any:
         return reduce(lambda x, y: getattr(x, y), field.split("."), obj)

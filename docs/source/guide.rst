@@ -121,6 +121,11 @@ from your database, use different types of filters::
     users = await users_repo.get_many([F.startswith("name", "B")])
     assert set(u.name for u in users) == {"Bob", "Bert"}
 
+If you need to get the opposite result, you can use negated filters::
+
+    users = await users_repo.get_many([~F.startswith("name", "B")])
+    assert set(u.name for u in users) == {"John"}
+
 To know more about filters, read the API documentation.
 
 Removing entities

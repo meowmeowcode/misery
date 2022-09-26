@@ -145,6 +145,7 @@ async def test_get_many(
     [
         ([F.eq("name", "Insomnia")], {"Insomnia"}),
         ([F.neq("name", "Insomnia")], {"Hopelessness", "Helplessness", "Constipation"}),
+        ([~F.eq("name", "Insomnia")], {"Hopelessness", "Helplessness", "Constipation"}),
         ([F.contains("name", "les")], {"Hopelessness", "Helplessness"}),
         ([F.contains("name", "LES")], set()),
         ([F.ncontains("name", "les")], {"Insomnia", "Constipation"}),

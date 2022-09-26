@@ -49,13 +49,24 @@ class F:
     """Object used for filtering entities
     before getting them from a repository."""
 
-    def __init__(self, type: FilterType, field: str, value: Any) -> None:
+    def __init__(
+        self, type: FilterType, field: str, value: Any, not_: bool = False
+    ) -> None:
         self.type = type
         self.field = field
         self.value = value
+        self.not_ = not_
 
     def __repr__(self) -> str:
         return f"F(type='{self.type}', field='{self.field}', value='{self.value}'')"
+
+    def __invert__(self) -> F:
+        return F(
+            type=self.type,
+            field=self.field,
+            value=self.value,
+            not_=True,
+        )
 
     @classmethod
     def eq(cls, field: str, value: Any) -> F:
