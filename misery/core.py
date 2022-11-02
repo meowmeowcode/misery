@@ -58,7 +58,7 @@ class F:
         self.not_ = not_
 
     def __repr__(self) -> str:
-        return f"F(type='{self.type}', field='{self.field}', value='{self.value}'')"
+        return f"F(type={self.type.__repr__()}, field={self.field.__repr__()}, value={self.value.__repr__()})"
 
     def __invert__(self) -> F:
         return F(
