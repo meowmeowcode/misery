@@ -41,6 +41,7 @@ class FilterType(Enum):
     NIN = enum.auto()
     IPIN = enum.auto()
     NIPIN = enum.auto()
+    HASANY = enum.auto()
     OR = enum.auto()
     AND = enum.auto()
 
@@ -296,6 +297,14 @@ class F:
         a given subnet.
         """
         return cls(FilterType.NIPIN, field, subnet)
+
+    @classmethod
+    def hasany(cls, field: str, value: Sequence) -> F:
+        """Create a filter to find entities
+        whose array-like field contains any
+        value from a given sequence.
+        """
+        return cls(FilterType.HASANY, field, value)
 
     @classmethod
     def or_(cls, *filters: F) -> F:

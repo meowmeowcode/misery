@@ -22,6 +22,7 @@ from pypika import (  # type: ignore
     functions as fn,
 )
 from pypika.terms import PseudoColumn  # type: ignore
+from pypika.clickhouse.array import Array, HasAny, Field  # type: ignore
 from pypika.clickhouse.search_string import Match  # type: ignore
 
 from .core import (
@@ -180,6 +181,22 @@ class ClickHouseRepo(Generic[T]):
         limit: Optional[int] = None,
         page: int = 1,
     ) -> Iterable[T]:
+        query = self._params_to_query(
+            filters=filters,
+            order=order,
+            limit=limit,
+            page=page,
+        )
+
+        return await self.fetch_many(query)
+
+    def _params_to_query(
+        self,
+        filters: Sequence[F] = (),
+        order: Sequence[str] = (),
+        limit: Optional[int] = None,
+        page: int = 1,
+    ) -> ClickHouseQuery:
         query = self.query
 
         if limit is not None:
@@ -195,7 +212,7 @@ class ClickHouseRepo(Generic[T]):
             criterion = self._filter_to_criterion(f)
             query = query.where(criterion)
 
-        return await self.fetch_many(query)
+        return query
 
     def _filter_to_criterion(self, f: F) -> Criterion:
         if f.type == FilterType.OR:
@@ -258,6 +275,8 @@ class ClickHouseRepo(Generic[T]):
             criterion = _is_ip_address_in_range(column, f.value)
         elif f.type == FilterType.NIPIN:
             criterion = Not(_is_ip_address_in_range(column, f.value))
+        elif f.type == FilterType.HASANY:
+            criterion = HasAny(column, Array(list(f.value)))
 
         if f.not_:
             return Not(criterion)

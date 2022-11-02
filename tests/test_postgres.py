@@ -72,7 +72,9 @@ async def db_schema(conn: Connection) -> AsyncGenerator:
         """
             CREATE TABLE websites (
                 id integer PRIMARY KEY,
-                address text NOT NULL UNIQUE
+                address text NOT NULL UNIQUE,
+                hosts text[],
+                framework text
             )
         """
     )
@@ -399,3 +401,21 @@ async def test_network_filter(
 ) -> None:
     websites = list(await websites_repo.get_many([filter_]))
     assert [w.id for w in websites] == [id_]
+
+
+@pytest.mark.parametrize(
+    "filter_, ids",
+    [
+        (F.hasany("hosts", ["test2.com", "something"]), [2]),
+        (F.hasany("hosts", ["something"]), []),
+    ],
+)
+async def test_has_any_filter(
+    filter_: F,
+    ids: int,
+    website: Website,
+    website2: Website,
+    websites_repo: WebsitesRepo,
+) -> None:
+    websites = list(await websites_repo.get_many([filter_]))
+    assert [w.id for w in websites] == ids

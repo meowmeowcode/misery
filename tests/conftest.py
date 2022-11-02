@@ -56,6 +56,11 @@ async def website(websites_repo: WebsitesRepo) -> Website:
 
 @pytest.fixture
 async def website2(websites_repo: WebsitesRepo) -> Website:
-    w = Website(id=2, address="192.168.2.5")
+    w = Website(
+        id=2,
+        address="192.168.2.5",
+        hosts=["test2.com", "test2.test2.com"],
+        framework="Django",
+    )
     await websites_repo.add(w)
     return w

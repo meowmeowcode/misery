@@ -47,6 +47,20 @@ class SymptomsClickHouseRepo(ClickHouseRepo[Symptom]):
 class WebsitesClickHouseRepo(ClickHouseRepo[Website]):
     table = Table("websites")
 
+    def dump(self, entity: Website) -> dict:
+        return {
+            "id": entity.id,
+            "address": entity.address,
+            "config.hosts": entity.hosts,
+        }
+
+    def load(self, record: dict) -> Website:
+        return Website(
+            id=record["id"],
+            address=record["address"],
+            hosts=record["config.hosts"],
+        )
+
 
 @pytest.fixture(scope="module")
 async def session() -> AsyncGenerator:
@@ -76,7 +90,10 @@ async def db_schema(session: ClientSession) -> AsyncGenerator:
         data="""
             CREATE TABLE websites (
                 id UInt32 NOT NULL,
-                address String NOT NULL
+                address String NOT NULL,
+                config Nested(
+                    hosts String
+                )
             )
             ENGINE = MergeTree() ORDER BY id
         """,
@@ -393,3 +410,21 @@ async def test_network_filter(
 ) -> None:
     websites = list(await websites_repo.get_many([filter_]))
     assert [w.id for w in websites] == [id_]
+
+
+@pytest.mark.parametrize(
+    "filter_, ids",
+    [
+        (F.hasany("config.hosts", ["test2.com", "something"]), [2]),
+        (F.hasany("config.hosts", ["something"]), []),
+    ],
+)
+async def test_has_any_filter(
+    filter_: F,
+    ids: int,
+    website: Website,
+    website2: Website,
+    websites_repo: WebsitesRepo,
+) -> None:
+    websites = list(await websites_repo.get_many([filter_]))
+    assert [w.id for w in websites] == ids

@@ -141,6 +141,7 @@ class DictRepo(Generic[T]):
         in ipaddress.ip_network(v),
         FilterType.NIPIN: lambda s, v: ipaddress.ip_address(s)
         not in ipaddress.ip_network(v),
+        FilterType.HASANY: lambda s, v: any(i in s for i in v),
     }
 
     def _filter_to_op(self, f: F) -> Callable:

@@ -1,8 +1,16 @@
+from __future__ import annotations
+
 import enum
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field,
+)
 from enum import Enum
 from functools import total_ordering
-from typing import Any
+from typing import (
+    Any,
+    Optional,
+)
 
 from misery import Repo
 
@@ -32,6 +40,8 @@ SymptomsRepo = Repo[Symptom]
 class Website:
     id: int
     address: str
+    hosts: list[str] = field(default_factory=list)
+    framework: Optional[str] = None
 
 
 WebsitesRepo = Repo[Website]

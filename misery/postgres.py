@@ -49,6 +49,7 @@ class _PostgreSQLMatching(Comparator):
     iregexp = " ~* "
     not_iregexp = " !~* "
     inet_in = " << "
+    overlap = " && "
 
 
 class _Regexp(BasicCriterion):
@@ -71,6 +72,11 @@ class _NotIRegexp(BasicCriterion):
         super().__init__(
             _PostgreSQLMatching.not_iregexp, term, term.wrap_constant(expr)
         )
+
+
+class _Overlap(BasicCriterion):
+    def __init__(self, term: Term, expr: str) -> None:
+        super().__init__(_PostgreSQLMatching.overlap, term, term.wrap_constant(expr))
 
 
 class _InetIn(BasicCriterion):
@@ -305,6 +311,8 @@ class PostgresRepo(Generic[T]):
             criterion = _InetIn(column, f.value)
         elif f.type == FilterType.NIPIN:
             criterion = Not(_InetIn(column, f.value))
+        elif f.type == FilterType.HASANY:
+            criterion = _Overlap(column, f.value)
 
         if f.not_:
             return Not(criterion)
