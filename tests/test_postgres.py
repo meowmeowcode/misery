@@ -419,3 +419,21 @@ async def test_has_any_filter(
 ) -> None:
     websites = list(await websites_repo.get_many([filter_]))
     assert [w.id for w in websites] == ids
+
+
+@pytest.mark.parametrize(
+    "filter_, id_",
+    [
+        (F.eq("framework", None), 1),
+        (F.neq("framework", None), 2),
+    ],
+)
+async def test_null_filter(
+    filter_: F,
+    id_: int,
+    website: Website,
+    website2: Website,
+    websites_repo: WebsitesRepo,
+) -> None:
+    websites = list(await websites_repo.get_many([filter_]))
+    assert [w.id for w in websites] == [id_]

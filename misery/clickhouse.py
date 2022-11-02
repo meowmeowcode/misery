@@ -36,6 +36,8 @@ from .core import (
 T = TypeVar("T")
 
 _is_ip_address_in_range = CustomFunction("isIPAddressInRange", ["address", "prefix"])
+_is_null = CustomFunction("isNull", ["x"])
+_is_not_null = CustomFunction("isNotNull", ["x"])
 
 
 class ClickHouseRepo(Generic[T]):
@@ -224,9 +226,15 @@ class ClickHouseRepo(Generic[T]):
         criterion: Any = None
 
         if f.type == FilterType.EQ:
-            criterion = column == f.value
+            if f.value is None:
+                criterion = _is_null(column)
+            else:
+                criterion = column == f.value
         elif f.type == FilterType.NEQ:
-            criterion = column != f.value
+            if f.value is None:
+                criterion = _is_not_null(column)
+            else:
+                criterion = column != f.value
         elif f.type == FilterType.LT:
             criterion = column < f.value
         elif f.type == FilterType.GT:

@@ -260,9 +260,15 @@ class PostgresRepo(Generic[T]):
         criterion: Any = None
 
         if f.type == FilterType.EQ:
-            criterion = column == f.value
+            if f.value is None:
+                criterion = column.isnull()
+            else:
+                criterion = column == f.value
         elif f.type == FilterType.NEQ:
-            criterion = column != f.value
+            if f.value is None:
+                criterion = column.notnull()
+            else:
+                criterion = column != f.value
         elif f.type == FilterType.LT:
             criterion = column < f.value
         elif f.type == FilterType.GT:

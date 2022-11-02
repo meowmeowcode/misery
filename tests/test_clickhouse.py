@@ -52,6 +52,7 @@ class WebsitesClickHouseRepo(ClickHouseRepo[Website]):
             "id": entity.id,
             "address": entity.address,
             "config.hosts": entity.hosts,
+            "framework": entity.framework,
         }
 
     def load(self, record: dict) -> Website:
@@ -59,6 +60,7 @@ class WebsitesClickHouseRepo(ClickHouseRepo[Website]):
             id=record["id"],
             address=record["address"],
             hosts=record["config.hosts"],
+            framework=record["framework"],
         )
 
 
@@ -91,6 +93,7 @@ async def db_schema(session: ClientSession) -> AsyncGenerator:
             CREATE TABLE websites (
                 id UInt32 NOT NULL,
                 address String NOT NULL,
+                framework Nullable(String),
                 config Nested(
                     hosts String
                 )
@@ -428,3 +431,21 @@ async def test_has_any_filter(
 ) -> None:
     websites = list(await websites_repo.get_many([filter_]))
     assert [w.id for w in websites] == ids
+
+
+@pytest.mark.parametrize(
+    "filter_, id_",
+    [
+        (F.eq("framework", None), 1),
+        (F.neq("framework", None), 2),
+    ],
+)
+async def test_null_filter(
+    filter_: F,
+    id_: int,
+    website: Website,
+    website2: Website,
+    websites_repo: WebsitesRepo,
+) -> None:
+    websites = list(await websites_repo.get_many([filter_]))
+    assert [w.id for w in websites] == [id_]
