@@ -354,6 +354,13 @@ class ClickHouseRepo(Generic[T]):
         data = await self.request_json(query)
         return int(data["data"][0]["count()"])
 
+    async def count_filtered(self, filter_: F) -> int:
+        criterion = self._filter_to_criterion(filter_)
+        query = self.query.where(criterion).distinct()
+        query = ClickHouseQuery.from_(query).select(fn.Count(1))
+        data = await self.request_json(query)
+        return int(data["data"][0]["count()"])
+
 
 class ClickHouseTransactionManager:
     """This class exists only for compatibility with the protocol

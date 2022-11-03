@@ -327,6 +327,16 @@ async def test_count_all(
     assert await symptoms_repo.count() == 3
 
 
+async def test_count_filtered(
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    helplessness: Symptom,
+    insomnia: Symptom,
+    constipation: Symptom,
+) -> None:
+    assert await symptoms_repo.count_filtered(F.gt("id", 2)) == 2
+
+
 async def test_transaction(
     symptoms_repo: SymptomsRepo,
     hopelessness: Symptom,

@@ -200,6 +200,9 @@ class DictRepo(Generic[T]):
             )
         return len(self.data)
 
+    async def count_filtered(self, filter_: F) -> int:
+        return sum(1 for _ in await self.get_many([filter_]))
+
 
 class DictTransactionManager:
     """Implementation of the :class:`misery.TransactionManager` protocol.

@@ -431,6 +431,11 @@ class Repo(Protocol[T]):
         """
         ...
 
+    async def count_filtered(self, filter_: F) -> int:
+        """Count entities that match a given filter.
+        """
+        ...
+
 
 class NotFound(Exception):
     """Error to raise when an entity cannot be found

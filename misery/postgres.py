@@ -384,6 +384,12 @@ class PostgresRepo(Generic[T]):
 
         return await self.conn.fetchval(str(query))
 
+    async def count_filtered(self, filter_: F) -> int:
+        criterion = self._filter_to_criterion(filter_)
+        query = self.query.where(criterion).distinct()
+        query = PostgreSQLQuery.from_(query).select(fn.Count(1))
+        return await self.conn.fetchval(str(query))
+
 
 _current_transaction = ContextVar("_current_transaction", default=None)
 _current_conn = ContextVar("_current_conn", default=None)
