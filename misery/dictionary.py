@@ -94,6 +94,7 @@ class DictRepo(Generic[T]):
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
+        offset: int = 0,
     ) -> Iterable[T]:
         result = self._apply_filters(self.data.values(), filters)
 
@@ -108,7 +109,7 @@ class DictRepo(Generic[T]):
         result = sorted(result, key=sorting_key)
 
         if limit is not None:
-            result = result[(page - 1) * limit : page * limit]
+            result = result[(page - 1) * limit + offset : page * limit + offset]
 
         return map(copy.deepcopy, result)
 

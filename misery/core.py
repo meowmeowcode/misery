@@ -370,6 +370,7 @@ class Repo(Protocol[T]):
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
+        offset: int = 0,
     ) -> Iterable[T]:
         """Get multiple entities.
 
@@ -380,6 +381,7 @@ class Repo(Protocol[T]):
         :param limit: Maximum number of entities to show on the page.
         :param page: Page number. Only when the ``limit`` parameter
             is used.
+        :param offset: Number of entities to skip.
         """
         ...
 

@@ -182,12 +182,14 @@ class ClickHouseRepo(Generic[T]):
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
+        offset: int = 0,
     ) -> Iterable[T]:
         query = self._params_to_query(
             filters=filters,
             order=order,
             limit=limit,
             page=page,
+            offset=offset,
         )
 
         return await self.fetch_many(query)
@@ -198,11 +200,14 @@ class ClickHouseRepo(Generic[T]):
         order: Sequence[str] = (),
         limit: Optional[int] = None,
         page: int = 1,
+        offset: int = 0,
     ) -> ClickHouseQuery:
         query = self.query
 
         if limit is not None:
-            query = query.limit(limit).offset((page - 1) * limit)
+            query = query.limit(limit).offset((page - 1) * limit + offset)
+        elif offset > 0:
+            query = query.offset(offset)
 
         for field in order:
             if field.startswith("-"):

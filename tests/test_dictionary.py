@@ -215,6 +215,27 @@ async def test_get_many_with_page_and_limit(
 
 
 @pytest.mark.parametrize(
+    "limit, offset, names",
+    [
+        (2, 1, ["Helplessness", "Insomnia"]),
+        (2, 3, ["Constipation"]),
+    ],
+)
+async def test_get_many_with_limit_and_offset(
+    limit: int,
+    offset: int,
+    names: list[str],
+    symptoms_repo: SymptomsRepo,
+    hopelessness: Symptom,
+    helplessness: Symptom,
+    insomnia: Symptom,
+    constipation: Symptom,
+) -> None:
+    symptoms = await symptoms_repo.get_many(limit=limit, offset=offset)
+    assert [s.name for s in symptoms] == names
+
+
+@pytest.mark.parametrize(
     "filters, order, name",
     [
         ([F.startswith("name", "I")], [], "Insomnia"),
