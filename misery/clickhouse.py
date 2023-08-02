@@ -222,15 +222,14 @@ class ClickHouseRepo(Generic[T]):
         return query
 
     def _filter_to_criterion(self, f: F) -> Criterion:
-        if f.type == FilterType.OR:
-            return Criterion.any([self._filter_to_criterion(ff) for ff in f.value])
-        elif f.type == FilterType.AND:
-            return Criterion.all([self._filter_to_criterion(ff) for ff in f.value])
-
         column = self.table[f.field]
         criterion: Any = None
 
-        if f.type == FilterType.EQ:
+        if f.type == FilterType.OR:
+            criterion = Criterion.any([self._filter_to_criterion(ff) for ff in f.value])
+        elif f.type == FilterType.AND:
+            criterion = Criterion.all([self._filter_to_criterion(ff) for ff in f.value])
+        elif f.type == FilterType.EQ:
             if f.value is None:
                 criterion = _is_null(column)
             else:

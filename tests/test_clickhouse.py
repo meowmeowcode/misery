@@ -228,6 +228,10 @@ async def test_get_many(
             {"Constipation", "Insomnia", "Helplessness"},
         ),
         ([F.and_(F.contains("name", "o"), F.contains("name", "ss"))], {"Hopelessness"}),
+        (
+            [~F.and_(F.contains("name", "o"), F.contains("name", "ss"))],
+            {"Insomnia", "Constipation", "Helplessness"},
+        ),
         ([F.contains("name", "o") & F.contains("name", "ss")], {"Hopelessness"}),
     ],
 )
