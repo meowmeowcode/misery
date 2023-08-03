@@ -271,6 +271,16 @@ class PostgresRepo(Generic[T]):
                 criterion = column.notnull()
             else:
                 criterion = column != f.value
+        elif f.type == FilterType.IEQ:
+            if f.value is None:
+                criterion = column.isnull()
+            else:
+                criterion = column.ilike(f.value)
+        elif f.type == FilterType.INEQ:
+            if f.value is None:
+                criterion = column.notnull()
+            else:
+                criterion = column.not_ilike(f.value)
         elif f.type == FilterType.LT:
             criterion = column < f.value
         elif f.type == FilterType.GT:

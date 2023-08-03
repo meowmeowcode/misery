@@ -239,6 +239,16 @@ class ClickHouseRepo(Generic[T]):
                 criterion = _is_not_null(column)
             else:
                 criterion = column != f.value
+        elif f.type == FilterType.IEQ:
+            if f.value is None:
+                criterion = _is_null(column)
+            else:
+                criterion = column.ilike(f.value)
+        elif f.type == FilterType.INEQ:
+            if f.value is None:
+                criterion = _is_not_null(column)
+            else:
+                criterion = column.not_ilike(f.value)
         elif f.type == FilterType.LT:
             criterion = column < f.value
         elif f.type == FilterType.GT:
