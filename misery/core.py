@@ -16,7 +16,9 @@ from typing import ForwardRef
 
 class FilterType(Enum):
     EQ = enum.auto()
+    IEQ = enum.auto()
     NEQ = enum.auto()
+    INEQ = enum.auto()
     LT = enum.auto()
     LTE = enum.auto()
     GT = enum.auto()
@@ -77,6 +79,15 @@ class F:
         return cls(FilterType.EQ, field, value)
 
     @classmethod
+    def ieq(cls, field: str, value: Any) -> F:
+        """Create a filter to find entities
+        with a specified field value.
+
+        Case-insensitive.
+        """
+        return cls(FilterType.IEQ, field, value)
+
+    @classmethod
     def lt(cls, field: str, value: Any) -> F:
         """Create a filter to find entities
         with a field value that is
@@ -115,6 +126,16 @@ class F:
         not equal to a given one.
         """
         return cls(FilterType.NEQ, field, value)
+
+    @classmethod
+    def ineq(cls, field: str, value: Any) -> F:
+        """Create a filter to find entities
+        with a field value that is
+        not equal to a given one.
+
+        Case-insensitive.
+        """
+        return cls(FilterType.INEQ, field, value)
 
     @classmethod
     def contains(cls, field: str, value: Any) -> F:
